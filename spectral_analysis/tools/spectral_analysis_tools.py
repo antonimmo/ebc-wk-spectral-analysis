@@ -10,7 +10,6 @@ from netCDF4 import Dataset
 from .utils_thesis import get_latlonid,coriolis,igw_disp_rel,igw_bm_partition_k
 
 
-
 #mpl.rcParams['axes.linewidth'] = 2
 #mpl.rc('xtick',labelsize=20)
 #mpl.rc('ytick',labelsize=20)
@@ -27,7 +26,6 @@ MK3 = 1./8.17
 M4 = 1./6.21
 M6 = 1./4.14
 
-# cos(36*pi/180)*(40000/360)*6/2
 def open_ds_kwe(fname,log=True):
 	dat = Dataset(fname,'r')
 	k = dat['Wvnumber'][:]
@@ -177,20 +175,41 @@ def calc_bm_igw_k(kh,omega,E,lat,Nbv=0.8594,H=4,log=True):
 	return bm_k,igw_k
 
 
-def plot_bm_igw_k(kh,omega,E,lat,Nbv=0.8594,H=4,log=True):	
-	bm_k,igw_k = calc_bm_igw_k(kh,omega,E,lat,Nbv=Nbv,H=H,log=log)
+def plot_bm_igw_k(kh,omega,E,lat,Nbv=0.8594,H=4,log=True,colour=None,alpha=1):
+	f = coriolis(lat)
 
+	# IGW mode 10
+	igw_10 = igw_disp_rel(kh,f,10,Nbv=Nbv,H=H,log=log)
+
+	## Hacemos la integral bajo y sobre la curva igw_10 para el modo 10
+	# Calculamos deltaOmega
+	dw_ = np.diff(omega)
+	dw = np.mean(dw_) 
+	Ekw = E.T # Transpuesta - me es mas facil pensar que kh va sobre las columnas
 	if log:
-		print("Calculating R(k) = IGW/BM ratio")
+		print("Calculating IGW/BM ratio")
+		print("dw = {0:.3f}".format(dw))
+		print('Kh:',kh.shape)
+		print('E.T: ',Ekw.shape)
+	#	
+	mask_igw = np.zeros(Ekw.shape)
+	mask_bm = np.zeros(Ekw.shape)
+	for kh_i in range(kh.size):
+		w_max = igw_10[kh_i]
+		mask_igw[:,kh_i] = omega>w_max	# IGW se considera sobre la curva de IGW_10
+		mask_bm[:,kh_i] = omega<=w_max	# BM se considera sobre la curva de IGW_10
+	igw_wk = np.multiply(Ekw,mask_igw)
+	bm_wk = np.multiply(Ekw,mask_bm)
+	# Finalmente integramos
+	igw_k = igw_wk[:,:].sum(axis=0)*dw
+	bm_k = bm_wk[:,:].sum(axis=0)*dw
 	bm_igw = bm_k/igw_k
-	
-	if log:
-		print("Min bm_igw: {}".format(np.min(bm_igw)))
-		print("Shapes: igw_wk {}, bm_wk {}".format(igw_wk.shape,bm_wk.shape))
-		print("Shapes: igw_k {}, bm_k {}, bm_igw {}".format(igw_k.shape,bm_k.shape,bm_igw.shape))
 
 	## Plot
-	plt.semilogx(kh,bm_igw,linewidth=3.5)
+	if colour is None:
+		plt.semilogx(kh,bm_igw,linewidth=3.5,alpha=alpha)
+	else:
+		plt.semilogx(kh,bm_igw,linewidth=3.5,color=colour,alpha=alpha)
 	
 
 def get_clim(var):
@@ -209,6 +228,8 @@ def plot_wk_forvar(fname,var,plot_igw_bm=False,Nbv=0.8594,H=4,wk_only=False,log=
 	#:::::::::::::::: Plot ::::::::::::::::
 	clim = get_clim(var)
 	kiso,omega,E = open_ds_kwe(fname,log)
+	#print("omega: min = {0:.3g}, max = {1:.3g}".format(omega.min(),omega.max()))
+	#print("1/omega: 1/min = {0:.3g}, 1/max = {1:.3g}".format(1/omega.min(),1/omega.max()))
 	lat,lon,id = get_latlonid(fname)
 	if log:
 		print("Lat = {}".format(lat))
@@ -232,66 +253,69 @@ def find_closest_idx(np_arr,val):
 	found = np.where(R==np.amin(R))
 	return found[0][0]
 
-def plot_bm_igw_k_forfolderid(folder,season,var,id,scales_km,Nbv=0.8594,H=4,log=True):
-	with open("{}/all_{}_{}.json".format(folder,season,var),'r') as f:
+def plot_bm_igw_k_forfolderid(folder,season,var,id,scales_km,Nbv=0.8594,H=4,log=True,colour=None,alpha=1):
+	with open("{}/spectra_db/all_{}_{}.json".format(folder,season,var),'r') as f:
 		data = json.load(f)
 	s_id = str(id)
 	lat = data[s_id]['lat']
 	lon = data[s_id]['lon']
 	fname_ = data[s_id]['fname']
-	fname = "{}/{}/{}/{}".format(folder,season,var,fname_)
+	fname = "{}/spectra/{}/{}/{}".format(folder,season,var,fname_)
 	k,omega,E = open_ds_kwe(fname,log)
-	#if type(scales_km) is tuple:
-	#	min_k_idx = find_closest_idx(k,1./scales_km[0])
-	#	max_k_idx = find_closest_idx(k,1./scales_km[1])
-	#	k = k[min_k_idx:max_k_idx]
-	#	E = E[min_k_idx:max_k_idx,:]
+	if type(scales_km) is tuple:
+		min_k_idx = find_closest_idx(k,1./scales_km[0])
+		max_k_idx = find_closest_idx(k,1./scales_km[1])
+		k = k[min_k_idx:max_k_idx]
+		E = E[min_k_idx:max_k_idx,:]
 	if log:
 		print('Kh:',k.shape)
 		print('E: ',E.shape)
 
 	if log:
 		print("ID = {}, lat = {}, lon = {}, season = {}, var = {}".format(id,lat,lon,season,var))
-	plot_bm_igw_k(k,omega,E,lat,Nbv=Nbv,H=H,log=log)
+	plot_bm_igw_k(k,omega,E,lat,Nbv=Nbv,H=H,log=log,colour=colour,alpha=alpha)
 	return k,lat
 
-def plot_bm_igw_k_forseasonvarsid(folder,season,vars,ids,scales_km=(200,10),Nbv=0.8594,H=4,ax=None,show=True,log=True):
+def plot_bm_igw_k_forseasonvarsid(folder,season,vars,ids,scales_km=(200,10),Nbv=0.8594,H=4,ax=None,show=True,log=True,colour=None,alpha=1,legend=None):
 	if ax is None:
 		ax = plt
 	legend_ = vars
 
 	if type(vars) is str:
 		if type(ids) is str:	
-			kh,_ = plot_bm_igw_k_forfolderid(folder,season,vars,ids,scales_km=scales_km,Nbv=Nbv,H=H,log=log)
+			kh,_ = plot_bm_igw_k_forfolderid(folder,season,vars,ids,scales_km=scales_km,Nbv=Nbv,H=H,log=log,colour=colour)
 			title = "{} for id = {}, season: {}".format(vars,ids,season)
-			legend = [vars]
+			legend_ = [vars]
 			#ax.legend([vars])
 		elif type(ids) is list:
 			legend_ = []
-			for id_,N,H_ in zip(ids,Nbv,H):
-				kh,lat = plot_bm_igw_k_forfolderid(folder,season,vars,id_,scales_km=scales_km,Nbv=N,H=H_,log=log)
+			if type(colour) is list:
+				colours = colour
+			else:
+				colours = [colour]*len(ids)
+			for id_,N,H_,colour_ in zip(ids,Nbv,H,colours):
+				kh,lat = plot_bm_igw_k_forfolderid(folder,season,vars,id_,scales_km=scales_km,Nbv=N,H=H_,log=log,colour=colour_,alpha=alpha)
 				legend_.append("{} ({})".format(id_,lat))
 			title = "{}, season: {}".format(vars,season)
-			#ax.legend(legends)
 	elif type(vars) is list:
 		for var in vars:
-			kh,_ = plot_bm_igw_k_forfolderid(folder,season,var,ids,scales_km=scales_km,Nbv=Nbv,H=H,log=log)
+			kh,_ = plot_bm_igw_k_forfolderid(folder,season,var,ids,scales_km=scales_km,Nbv=Nbv,H=H,log=log,colour=colour)
 		title = "id = {}, season: {}".format(ids,season)
-		#ax.legend(vars)
 	
 	ax.semilogx([kh[0],kh[-1]],[1,1],'k--')
 	if type(ax) is Subplot:
-		ax.set_title(title,size='xx-large')
+		ax.set_title(title,size='large')
+		ax.set_xlim(kh[0],kh[-1])
+		ax.set_ylim(auto=True)
 		scales = [round(1/kh[0],1),200,150,100,75,50,35,25,15,10,5,round(1/kh[-1],1)]
 		scales = [scale for scale in scales if (scale<=scales_km[0] and scale>=scales_km[-1])]
 		ax.set_xticks(np.divide(1,scales))
 		ax.set_xticklabels(["{}".format(int(scale)) if scale%1==0 else "{0:.1f}".format(scale) for scale in scales],size='medium')
-		ax.set_xlim(1/scales[0],1/scales[-1])
-		#ax.set_ylim([0,2])
-		ax.set_xlabel("Wavelength [km]",size='x-large')
+		ax.set_xlabel("Wavelength [km]",size='medium')
 	else:
-		ax.title(title,size='xx-large')
+		ax.title(title,size='large')
 
-	ax.legend(legend_)
+	ax.legend(legend_,prop={'size': 'small'})
 	if show and (type(ax) is not Subplot):
 		plt.show()
+
