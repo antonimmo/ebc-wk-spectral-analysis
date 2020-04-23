@@ -18,6 +18,7 @@ from .utils_thesis import get_latlonid,coriolis,igw_disp_rel,igw_bm_partition_k
 #mpl.rcParams['xtick.direction'] = 'out'
 #mpl.rcParams['ytick.direction'] = 'out'
 #mpl.rcParams['font.family']='DejaVu Sans' # Era Times New Roman, pero ni en Colab ni en OSX funciona
+mpl.rcParams['font.size'] = 24
 
 ## Frecuencias de marea
 #K1 = 1./23.93
@@ -53,7 +54,7 @@ def open_ds_kwe(fname,log=True):
 	# H: Profundidad media, en km
 def plot_wk_integrated(kiso,omega,E,lat,clim,Nbv=0.8594,H=4,wk_only=False,log=True,igw_modes=[1,2,3,4]):
 	##::::::::: Setting the figure :::::::::::
-	fig = plt.figure(figsize=(7,6))
+	fig = plt.figure(figsize=(14,12))
 	if not wk_only:
 		ax1 = plt.subplot2grid((3,3),(0,1),colspan=2)
 		ax2 = plt.subplot2grid((3,3),(1,0),rowspan=2)
@@ -73,8 +74,8 @@ def plot_wk_integrated(kiso,omega,E,lat,clim,Nbv=0.8594,H=4,wk_only=False,log=Tr
 	f = np.abs(coriolis(lat)) ## < ========== Latitude from the name
 	ks = np.array([1.e-3,1.])
 	# Graficamos la banda f
-	ax3.plot(ks,[f,f],'k-',linewidth=2.)
-	ax3.text(1/200.,f+0.002,r'$f$',color='k',size='large')
+	ax3.plot(ks,[f,f],'w-',linewidth=3.)
+	ax3.text(1/200.,f-0.015,r'$f$',color='w',size='large')
 
 	## Graficamos los modos verticales 1,2,3,4,10 para las ondas internas
 	kh = kiso #np.linspace(1/270.,1/5.)
@@ -84,15 +85,15 @@ def plot_wk_integrated(kiso,omega,E,lat,clim,Nbv=0.8594,H=4,wk_only=False,log=Tr
 		igw_modes = [igw_modes]
 	for mode in igw_modes:
 		igw_n = igw_disp_rel(kh,f,mode,Nbv=Nbv,H=H,log=log)
-		ax3.plot(kh,igw_n,'k:',linewidth=2.)
+		ax3.plot(kh,igw_n,'k:',linewidth=4)
 	w_partition = igw_bm_partition_k(kh,f,M2,Nbv=Nbv,H=H,log=log)
-	ax3.plot(kh,w_partition,'k--',linewidth=2.5)
+	ax3.plot(kh,w_partition,'k--',linewidth=4)
 	
 	# Tide constituents
 	#for (td,td_label) in zip ([M2,MK3,M4,M6],['M2','MK3','M4','M6']):
 	for (td,td_label) in zip ([M2],['M2']):
-		ax3.plot(ks,[td, td],'k--',linewidth=2.)
-		ax3.text(1/200,td+.0075,td_label,color='k')
+		ax3.plot(ks,[td, td],'w--',linewidth=2.)
+		ax3.text(1/200,td+.0075,td_label,color='w')
 	# Trying to set ticks in space domain
 	#ax3.set_xlabel('Horizontal Wavenumber k [cpkm]', size=18)  # En numero de onda
 	ax3.set_xlabel('Horizontal scales [km]', size='x-large')  # En km
@@ -104,8 +105,8 @@ def plot_wk_integrated(kiso,omega,E,lat,clim,Nbv=0.8594,H=4,wk_only=False,log=Tr
 	             label=r'$K$ $\times$ $\omega$ $\times$ $\Psi(k,\omega)$ [units$^{2}$/(cpkm $\times$ cph)]')
 
 	if wk_only:
-		ax3.set_yticks([1./3., 1./6., 1./12., 1./24., 1./240.])
-		ax3.set_yticklabels(['3 h','6 h','12 h','1 d','10 d'])
+		ax3.set_yticks([1./4., 1./12., 1./24., 1./240.])
+		ax3.set_yticklabels(['4 h','12 h','1 d','10 d'], size='large')
 		ax3.set_ylabel('Time scales',size='x-large')
 	else:
 		#### :::::: Frequency spectrum :::::::::::
@@ -117,7 +118,7 @@ def plot_wk_integrated(kiso,omega,E,lat,clim,Nbv=0.8594,H=4,wk_only=False,log=Tr
 		# Trying to set ticks in time domain
 		#ax2.set_ylabel('Frequency [cph]',size=18)
 		ax2.set_yticks([1./4., 1./12., 1./24., 1./240.])
-		ax2.set_yticklabels(['4 h','12 h','1 d','10 d'])
+		ax2.set_yticklabels(['4 h','12 h','1 d','10 d'], size='large')
 		ax2.set_ylabel('Time scales',size='x-large')
 
 
@@ -204,25 +205,25 @@ def get_clim(var):
 
 	return clim
 
-def plot_wk_forvar(fname,var,plot_igw_bm=False,Nbv=0.8594,H=4,wk_only=False,log=True):
+def plot_wk_forvar(fname,var,plot_igw_bm=False,Nbv=0.8594,H=4,wk_only=False,log=True,igw_modes=None):
 	#:::::::::::::::: Plot ::::::::::::::::
 	clim = get_clim(var)
 	kiso,omega,E = open_ds_kwe(fname,log)
 	lat,lon,id = get_latlonid(fname)
 	if log:
 		print("Lat = {}".format(lat))
-	plot_wk_integrated(kiso,omega,E,lat,clim,Nbv=Nbv,H=H,wk_only=wk_only,log=log)
+	plot_wk_integrated(kiso,omega,E,lat,clim,Nbv=Nbv,H=H,wk_only=wk_only,log=log,igw_modes=igw_modes)
 	if plot_igw_bm:
 		plot_bm_igw_k(kiso,omega,E,lat,Nbv=Nbv,H=H,log=log)
 
-def plot_wk_forseasonvarid(folder,season,var,id,Nbv=0.8594,H=4,wk_only=False,log=True):
-	with open("{}/all_{}_{}.json".format(folder,season,var),'r') as f:
+def plot_wk_forseasonvarid(prnt_folder,season,var,id,Nbv=0.8594,H=4,wk_only=False,log=True):
+	with open("{}/spectra_db/all_{}_{}.json".format(prnt_folder,season,var),'r') as f:
 		data = json.load(f)
 	s_id = str(id)
 	#lat = data[s_id]['lat']
 	#lon = data[s_id]['lon']
 	fname_ = data[s_id]['fname']
-	fname = "{}/{}/{}/{}".format(folder,season,var,fname_)
+	fname = "{}/spectra/{}/{}/{}".format(prnt_folder,season,var,fname_)
 	plot_wk_forvar(fname,var,Nbv=Nbv,H=H,wk_only=wk_only,log=log)
 
 
