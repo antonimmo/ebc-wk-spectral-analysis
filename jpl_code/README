@@ -1,0 +1,26 @@
+November 2018,
+
+Spectral analysis.
+
+A groundbreaking global ocean and sea ice simulation that represents full-depth ocean
+process with an unprecedent degree of realism is used to characterize BMs and IGWs.
+The Massachusetts Institute of Technology genereal circulation model (MITgcm, Hill et al., 2007) was the heart of the numerical simulation implemented on a latitude/longitude/polar cap (LLC) configuration (Forget et al., 2015). The global simulation was divided in 13 square tiles woth 4,320 grid points on each side (hereinafter called LLC4320).
+
+Identification of the respective impacts of IGWs and BMs on the different fields is based on a spectral analysis in the frequency and wavenumber domains. The LLC4320 simulation has been divided into square boxes with ~6 deg size for the two seasons (January-February-March, JFM; and August-September-October [ASO]). This allows to resolve length scales from 4 to 300 km and periods from 2 hr (hourly outputs were used) to 45 days.
+
+More information about the methodology can be found in the folder named "reference".
+Inside the folder a JGR-paper is placed.
+Alos, you will find the paper in the next link: https://rdcu.be/bbnGl
+
+Python codes to handle the information are placed in the folder named "programs".
+
+Regarding the files, the names of the files include information about the latitude and longitude
+of the central point of the box:
+"Spectrum_1_at_LON_-35.0_LAT_-68.925.nc"
+
+Any additional information, please send me an email at Hector.Torres.Gutierrez@jpl.nasa.gov.
+
+Hector S Torres
+JPL/Caltech
+Earth Science Division
+Sea Level and Ice group

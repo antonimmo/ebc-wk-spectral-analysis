@@ -1,0 +1,962 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"lo",
+				"logging"
+			],
+			[
+				"area",
+				"area_id"
+			],
+			[
+				"k_lvl",
+				"k_lvl_suffixes"
+			],
+			[
+				"prop",
+				"propList"
+			],
+			[
+				"ids_",
+				"ids_Ben"
+			],
+			[
+				"area_",
+				"area_face"
+			],
+			[
+				"igw",
+				"igw_disp_rel"
+			],
+			[
+				"time",
+				"time_prefix"
+			],
+			[
+				"t_",
+				"time_prefix"
+			],
+			[
+				"max",
+				"max_lon"
+			],
+			[
+				"RV",
+				"RV_0"
+			],
+			[
+				"ro",
+				"rob_rv_st"
+			],
+			[
+				"Lt",
+				"Lt_km"
+			],
+			[
+				"Gr",
+				"GridMdsBase"
+			],
+			[
+				"read",
+				"read_indexes"
+			],
+			[
+				"DY",
+				"DY_48"
+			],
+			[
+				"LON",
+				"LON_48"
+			],
+			[
+				"get_lon",
+				"get_lonlat24"
+			],
+			[
+				"LAT",
+				"LAT_24"
+			],
+			[
+				"get",
+				"get_dxdy24"
+			],
+			[
+				"leg",
+				"legend_"
+			],
+			[
+				"poly",
+				"poly_props"
+			],
+			[
+				"po",
+				"poly_fn"
+			],
+			[
+				"sea",
+				"season_h"
+			],
+			[
+				"season",
+				"season_h"
+			],
+			[
+				"ig",
+				"igw_bm"
+			],
+			[
+				"bm",
+				"bm_k"
+			],
+			[
+				"mask",
+				"mask_igw"
+			],
+			[
+				"kh",
+				"kh_i"
+			],
+			[
+				"setyl",
+				"set_ylabel"
+			],
+			[
+				"vec",
+				"vec2char"
+			],
+			[
+				"char",
+				"char2vec"
+			],
+			[
+				"min_",
+				"min_i"
+			],
+			[
+				"min",
+				"min_i"
+			],
+			[
+				"crea",
+				"create_measurement"
+			],
+			[
+				"el",
+				"elapsed_search"
+			],
+			[
+				"Request",
+				"RequestParam"
+			],
+			[
+				"inner",
+				"innerFile"
+			],
+			[
+				"Io",
+				"IOContext"
+			],
+			[
+				"Response",
+				"ResponseBody"
+			],
+			[
+				"indexes",
+				"indexesMap"
+			],
+			[
+				"EX",
+				"ExceptionHandler"
+			],
+			[
+				"index",
+				"indexesFolder"
+			],
+			[
+				"Req",
+				"RequestMethod"
+			],
+			[
+				"Res",
+				"RequestMapping"
+			],
+			[
+				"exis",
+				"existingParamSets"
+			],
+			[
+				"getP",
+				"getParamSets"
+			],
+			[
+				"cvc",
+				"cvcRestClient"
+			],
+			[
+				"out",
+				"outcome"
+			],
+			[
+				"popu",
+				"populationId"
+			],
+			[
+				"Executor",
+				"ExecutorService"
+			],
+			[
+				"Calla",
+				"callablePool"
+			],
+			[
+				"Respose",
+				"ResponseBody"
+			],
+			[
+				"Date",
+				"DATE_FORMAT_US"
+			],
+			[
+				"date",
+				"dateStr"
+			],
+			[
+				"Parse",
+				"ParseException"
+			],
+			[
+				"conn",
+				"connTimeout"
+			],
+			[
+				"READ",
+				"READ_TIMEOUT_DEFAULT"
+			],
+			[
+				"CONN",
+				"CONNTIMEOUT_PROP"
+			],
+			[
+				"factor",
+				"restClientFactory"
+			],
+			[
+				"Segmen",
+				"SegmentTypePNRB"
+			],
+			[
+				"Anci",
+				"Ancillaries"
+			],
+			[
+				"getAn",
+				"getAncillariesFromAncillaryServices"
+			],
+			[
+				"getPro",
+				"getProfileId"
+			],
+			[
+				"Com",
+				"ComplexProfile"
+			],
+			[
+				"ins",
+				"instanceof"
+			],
+			[
+				"quer",
+				"queryId"
+			],
+			[
+				"las",
+				"lastCachedDomains"
+			],
+			[
+				"No",
+				"NotImplementedException"
+			],
+			[
+				"YEAR",
+				"YEAR_STR"
+			],
+			[
+				"MOTN",
+				"MONTH_STR"
+			],
+			[
+				"MOTH",
+				"MONTH_STR"
+			],
+			[
+				"MO",
+				"MONTH_PERIODICTYPEID"
+			],
+			[
+				"tye",
+				"typeToID"
+			],
+			[
+				"Collec",
+				"Collections"
+			],
+			[
+				"stat",
+				"statusComparison"
+			],
+			[
+				"compa",
+				"compareTo"
+			],
+			[
+				"Param",
+				"ParameterSet"
+			],
+			[
+				"that",
+				"thatValue"
+			],
+			[
+				"null",
+				"nullBands"
+			],
+			[
+				"s1",
+				"s1_lc"
+			],
+			[
+				"qui",
+				"quickView_runAt"
+			],
+			[
+				"string",
+				"dateFromString_2formats"
+			],
+			[
+				"thread",
+				"threadName"
+			],
+			[
+				"isSG",
+				"isSg"
+			],
+			[
+				"bin",
+				"binaryToken"
+			],
+			[
+				"Exe",
+				"ExecutionException"
+			],
+			[
+				"W",
+				"WSDLNoSessionException"
+			],
+			[
+				"domain",
+				"domainId"
+			],
+			[
+				"INVA",
+				"INVALIDACTION_MSG"
+			],
+			[
+				"charge",
+				"chargeOrder"
+			],
+			[
+				"del",
+				"deltaPosition"
+			],
+			[
+				"parti",
+				"particles"
+			],
+			[
+				"testSte",
+				"testStepNameParts"
+			],
+			[
+				"isC",
+				"isCDHActivated"
+			],
+			[
+				"we",
+				"weight"
+			],
+			[
+				"ROLE",
+				"ROLE_ADMIN"
+			],
+			[
+				"CVC",
+				"ROLE_CVCADMIN"
+			],
+			[
+				"SCP",
+				"SCP_USERS"
+			],
+			[
+				"CDHRO",
+				"CDHROLES"
+			],
+			[
+				"CVCR",
+				"CVCROLESCLAIMNAME"
+			],
+			[
+				"doma",
+				"domainId"
+			],
+			[
+				"enabled",
+				"enabledAirlines"
+			],
+			[
+				"enab",
+				"enabledAirlines"
+			],
+			[
+				"Ar",
+				"Arrays"
+			],
+			[
+				"UPDATE_USER_",
+				"UPDATE_USER_ROLE"
+			],
+			[
+				"rol",
+				"role"
+			],
+			[
+				"Arr",
+				"ArrayList"
+			],
+			[
+				"failed",
+				"failedStatusColorIndex"
+			],
+			[
+				"succe",
+				"successfulStatusColorIndex"
+			],
+			[
+				"testStep",
+				"testStepName"
+			],
+			[
+				"wid",
+				"width"
+			],
+			[
+				"at",
+				"attr"
+			],
+			[
+				"exe",
+				"executions"
+			],
+			[
+				"mas",
+				"masterExecution"
+			],
+			[
+				"start",
+				"startTimestamp"
+			],
+			[
+				"context",
+				"contextParameters"
+			],
+			[
+				"logg",
+				"LOGGER"
+			],
+			[
+				"rea",
+				"reason"
+			],
+			[
+				"reason",
+				"reasonString"
+			],
+			[
+				"http",
+				"httpStatusCode"
+			],
+			[
+				"is",
+				"isMasterExecutionSelected"
+			],
+			[
+				"too",
+				"tooltipText"
+			],
+			[
+				"exec",
+				"execId"
+			],
+			[
+				"execu",
+				"executionId"
+			],
+			[
+				"dateF",
+				"dateFormat"
+			],
+			[
+				"testSt",
+				"testSteps"
+			],
+			[
+				"ex",
+				"execution"
+			]
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+		[
+			[
+				[
+					"Packages/Fortran/build-systems/GFortran.sublime-build",
+					""
+				],
+				[
+					"Packages/Fortran/build-systems/GFortran.sublime-build",
+					"Run"
+				]
+			],
+			[
+				"Packages/Fortran/build-systems/GFortran.sublime-build",
+				"Run"
+			]
+		],
+		[
+			[
+				[
+					"Packages/Python/Python.sublime-build",
+					""
+				],
+				[
+					"Packages/Python/Python.sublime-build",
+					"Syntax Check"
+				]
+			],
+			[
+				"Packages/Python/Python.sublime-build",
+				""
+			]
+		]
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 67.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"packa",
+				"Package Control: Install Package"
+			],
+			[
+				"jsn",
+				"Set Syntax: JSON"
+			],
+			[
+				"conda",
+				"Conda: Activate Environment"
+			],
+			[
+				"preferences",
+				"Preferences: Package Control Settings – Default"
+			],
+			[
+				"prefe",
+				"Preferences: SublimeLinter Settings"
+			],
+			[
+				"linter",
+				"SublimeLinter: Reload SublimeLinter and its Plugins"
+			],
+			[
+				"forr",
+				"Project: Refresh Folders"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"instal",
+				"Package Control: Install Package"
+			],
+			[
+				"pytho",
+				"Set Syntax: Python"
+			],
+			[
+				"gfortran",
+				"Set Syntax: GFortran Build Results"
+			],
+			[
+				"theme",
+				"Colorsublime: Browse Themes"
+			],
+			[
+				"pac",
+				"Package Control: List Packages"
+			],
+			[
+				"iden",
+				"Indentation: Reindent Lines"
+			],
+			[
+				"javatar",
+				"Javatar: Browse Commands..."
+			],
+			[
+				"color",
+				"Colorsublime: Install Theme"
+			],
+			[
+				"package install",
+				"Package Control: Install Package"
+			],
+			[
+				"comm",
+				"Javatar: Browse Commands..."
+			],
+			[
+				"open",
+				"View: Toggle Open Files in Side Bar"
+			],
+			[
+				"build",
+				"Javatar: Builds..."
+			],
+			[
+				"javatar pa",
+				"Preferences: Javatar's Proto.javatar-packages'"
+			],
+			[
+				"command",
+				"Javatar: Browse Commands..."
+			],
+			[
+				"java",
+				"Set Syntax: Java"
+			],
+			[
+				"Javatar",
+				"Set Syntax: JavaScript (Rails)"
+			],
+			[
+				"",
+				"Set Syntax: Java"
+			]
+		],
+		"width": 449.0
+	},
+	"console":
+	{
+		"height": 126.0,
+		"history":
+		[
+			"import urllib.request,os,hashlib; h = '6f4c264a24d933ce70df5dedcf1dcaee' + 'ebe013ee18cced0ef93d5f746d80ef60'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by);",
+			"import urllib.request,os,hashlib; h = '6f4c264a24d933ce70df5dedcf1dcaee' + 'ebe013ee18cced0ef93d5f746d80ef60'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)",
+			"import urllib.request,os,hashlib; h = 'eb2297e1a458f27d836c04bb0cbaf282' + 'd0e7a3098092775ccb37ca9d6b2e4b7d'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)",
+			"Install Package",
+			"Install Package Javatar"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis",
+		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/spectral_analysis"
+	],
+	"file_history":
+	[
+		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/common_vars.py",
+		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/spectral_analysis/create_choropleth_data.py",
+		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/spectral_analysis/create_spectra_db.py",
+		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/spectral_analysis/create_tiles_jsondb.py",
+		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/spectral_analysis/merge_cRd_Etopo_data.py",
+		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/spectral_analysis/setup.py",
+		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/spectral_analysis/tools/llc4320_utils.py",
+		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/spectral_analysis/tools/spectral_analysis_tools.py",
+		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/spectral_analysis/tools/utils_thesis.py",
+		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/tools/llc4320_utils.py",
+		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/tools/spectral_analysis_tools.py",
+		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/create_choropleth_data.py",
+		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/create_spectra_db.py",
+		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/create_tiles_jsondb.py",
+		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/setup.py",
+		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/tools/utils_RobKFiltered.py",
+		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/tools/__init__.py",
+		"/Volumes/GoogleDrive/Mon Drive/Tesis/spectral_analysis/programs/Plot_WF_spectrum_from_database.py",
+		"/Volumes/GoogleDrive/Mon Drive/Tesis/spectral_analysis/wk_spectra/wf_spectrum.py",
+		"/Volumes/GoogleDrive/Mon Drive/Tesis/spectral_analysis/tesis_spectralanalysis_env.yaml",
+		"/home/antonio/GoogleDrive/Tesis/spectral_analysis/map_data/RV_ASO_geo.json",
+		"/home/antonio/GoogleDrive/Tesis/spectral_analysis/wk_spectra/calc_wf_scalar.py",
+		"/home/antonio/GoogleDrive/Tesis/spectral_analysis/create_choropleth_data.py",
+		"/home/antonio/GoogleDrive/Tesis/spectral_analysis/spectral_analysis_tools.py",
+		"/home/antonio/GoogleDrive/Tesis/spectral_analysis/utils_thesis.py",
+		"/home/antonio/GoogleDrive/Tesis/spectral_analysis/all_ASO_KE.json",
+		"/home/antonio/GoogleDrive/Tesis/spectral_analysis/programs/Plot_WF_spectrum_from_database.py",
+		"/home/antonio/GoogleDrive/Tesis/spectral_analysis/Rob_kfiltered/Rob_workflow.py",
+		"/home/antonio/GoogleDrive/Tesis/spectral_analysis/python_fns/llc4320_utils.py",
+		"/home/antonio/GoogleDrive/Cursos/Cuatrimestre 2019-I/Análisis de datos/Tarea2-Enric/tarea3.m",
+		"/home/antonio/GoogleDrive/Tesis/spectral_analysis/ro_b_workflow/wf_tasks.py",
+		"/home/antonio/GoogleDrive/Tesis/Rob_kfiltered/Rob_workflow.py",
+		"/home/antonio/GoogleDrive/Tesis/spectral_analysis/merge_cRd_Etopo_data.py",
+		"/home/antonio/GoogleDrive/Tesis/spectral_analysis/tesis_spectralanalysis_env.yaml",
+		"/home/antonio/GoogleDrive/Tesis/spectral_analysis/jpl-spectralanalysis-condaenv.yml",
+		"/home/antonio/GoogleDrive/Tesis/spectral_analysis/create_spectra_db.py",
+		"/home/antonio/GoogleDrive/Tesis/spectral_analysis/create_ choropleth_data.py",
+		"/home/antonio/GoogleDrive/Tesis/spectral_analysis/all_JFM_KE.json",
+		"/home/antonio/GoogleDrive/Tesis/spectral_analysis/create_tiles_jsondb.py",
+		"/home/antonio/GoogleDrive/Tesis/spectral_analysis/Plot_WF_spectrum_from_database.py",
+		"/Volumes/GoogleDrive/Mon Drive/Tesis/spectral_analysis/tesis-spectralanalysys.sublime-project",
+		"/Volumes/GoogleDrive/Mon Drive/Tesis/spectral_analysis/readFile.m",
+		"/Volumes/GoogleDrive/Mon Drive/Tesis/spectral_analysis/Plot_WF_spectrum_from_database.py",
+		"/Volumes/GoogleDrive/Mon Drive/Tesis/spectral_analysis/Spectrum_778_at_LON_-59.0_LAT_31.462.nc",
+		"/Volumes/GoogleDrive/Mon Drive/Cuatrimestre 2019-II/Modelación/Tarea7/topo.f",
+		"/Volumes/GoogleDrive/Mon Drive/Cuatrimestre 2019-II/Modelación/Tarea7/htopo (1)",
+		"/Volumes/GoogleDrive/Mon Drive/modelacion/topo.f",
+		"/Volumes/GoogleDrive/Mon Drive/Cuatrimestre 2019-II/Modelación/Tarea7/vtopo",
+		"/Volumes/GoogleDrive/Mon Drive/Cuatrimestre 2019-II/Modelación/Tarea7/utopo",
+		"/home/antonio/GoogleDrive/Cuatrimestre 2019-II/Modelación/Tarea7/utopo",
+		"/home/antonio/GoogleDrive/Cuatrimestre 2019-II/Modelación/Tarea 5/tide.dat2",
+		"/home/antonio/GoogleDrive/Cuatrimestre 2019-II/Modelación/Tarea 5/tide2.f",
+		"/home/antonio/GoogleDrive/Cuatrimestre 2019-II/Modelación/Tarea 5/tide.outc",
+		"/home/antonio/GoogleDrive/Cuatrimestre 2019-II/Modelación/Tarea 4/tide.outc",
+		"/home/antonio/GoogleDrive/Cuatrimestre 2019-II/Modelación/Tarea 4/tide2.f",
+		"/Users/antonimmo/GitHub/learning-python/exercices/time_complexity/set_complexity.py",
+		"/Users/antonimmo/GitHub/learning-python/keras/rnn/charseq/main.py",
+		"/Users/antonimmo/GitHub/learning-python/keras/rnn/charseq/main_fchollet.py",
+		"/Volumes/GoogleDrive/Mon Drive/Modelación/Tarea 1/javac",
+		"/Volumes/GoogleDrive/Mon Drive/Tesis/Plot_WF_spectrum_from_database.py",
+		"/Volumes/GoogleDrive/Mon Drive/Modelación/Tarea 1/tarea1.f",
+		"/Users/antonimmo/Library/Application Support/Sublime Text 3/Packages/Package Control/Package Control.sublime-settings",
+		"/Users/antonimmo/Library/Application Support/Sublime Text 3/Packages/User/Package Control.sublime-settings",
+		"/Users/antonimmo/Downloads/Listado_completo_cancelados y condonados.csv",
+		"/Users/antonimmo/GitHub/learning-python/keras/rnn/charseq/reddit_trump71217.csv",
+		"/Users/antonimmo/GitHub/tf_training/neuralnetwork/first_nn.py",
+		"/Users/antonimmo/GitHub/learning-python/exercices/time_complexity/tictoc.py",
+		"/Users/antonimmo/GitHub/tf_training/npy/np_arrays.py",
+		"/Users/antonimmo/GitHub/cdh-ui/backend-api/src/main/webapp/WEB-INF/cdh-servlet.xml",
+		"/Users/antonimmo/GitHub/cdh-ui/backend-api/src/main/java/com/viajez/cdh/wsdlclient/CDHSabreFactory.java",
+		"/Users/antonimmo/GitHub/cdh-ui/backend-api/src/main/java/com/viajez/cdh/wsdlclient/CDHSabreQuerier.java",
+		"/Users/antonimmo/GitHub/cdh-ui/backend-api/src/main/java/com/viajez/cdh/restclient/CVCAPIClient.java",
+		"/Users/antonimmo/GitHub/cdh-ui/backend-api/src/main/java/com/viajez/cdh/wsdlclient/queryperformers/SabreOTAProfileSearchQueryPerformer.java",
+		"/Users/antonimmo/GitHub/sentiment-analysis/flask_websocket_api/jobs.py",
+		"/Users/antonimmo/GitHub/sentiment-analysis/flask_websocket_api/websocketdemo.py",
+		"/Users/antonimmo/repos/luceneindexesapi/src/main/webapp/WEB-INF/luceneindexesapi-servlet.xml",
+		"/Users/antonimmo/repos/luceneindexesapi/src/main/java/com/viajez/machinelearning/luceneapi/soapclient/queryperformers/SearchAllQueryPerformer.java",
+		"/Users/antonimmo/repos/luceneindexesapi/src/main/java/com/viajez/machinelearning/luceneapi/controllers/IndexesController.java",
+		"/Users/antonimmo/repos/luceneindexesapi/pom.xml",
+		"/Users/antonimmo/repos/CDH/pom.xml",
+		"/Users/antonimmo/repos/CDH/backend-api/src/main/java/com/viajez/cdh/wsdlclient/queryperformers/AncillariesSearchQueryPerformer.java",
+		"/Users/antonimmo/repos/Duke/src/main/java/no/priv/garshol/duke/databases/LuceneDatabase.java",
+		"/Users/antonimmo/repos/CDH/backend-api/src/main/webapp/WEB-INF/cdh-servlet.xml",
+		"/Users/antonimmo/repos/CDH/backend-api/pom.xml",
+		"/Users/antonimmo/repos/luceneindexesapi/src/main/java/com/viajez/machinelearning/luceneapi/models/LuceneIndexWrapper.java",
+		"/Users/antonimmo/repos/Duke/src/main/java/no/priv/garshol/duke/Processor.java",
+		"/Users/antonimmo/repos/CDH/how_to_use_jaxb-xjc.txt",
+		"/Users/antonimmo/repos/CDH/config_tomcat_vars.sh",
+		"/Users/antonimmo/repos/CDH/backend-api/src/main/java/com/viajez/cdh/restapi/controllers/BasicController.java",
+		"/Users/antonimmo/repos/CDH/backend-api/src/main/java/com/viajez/cdh/restapi/controllers/CVCController.java",
+		"/Users/antonimmo/createinput.sh",
+		"/Users/antonimmo/feed2.json",
+		"/Users/antonimmo/repos/Duke/src/main/java/no/priv/garshol/duke/ConfigurationImpl.java",
+		"/Users/antonimmo/input.json",
+		"/Users/antonimmo/repos/qa-visualize/README.md",
+		"/Users/antonimmo/repos/CDH/frontend-app/how_to.md",
+		"/Users/antonimmo/repos/CDH/frontend-app/pom.xml",
+		"/Users/antonimmo/repos/luceneindexesapi/src/main/webapp/WEB-INF/web.xml",
+		"/Users/antonimmo/repos/luceneindexesapi/src/main/java/com/viajez/machinelearning/luceneapi/controllers/exception/NotFoundException.java",
+		"/Users/antonimmo/repos/luceneindexesapi/src/main/java/com/viajez/machinelearning/luceneapi/controllers/exception/ConflictException.java",
+		"/Users/antonimmo/repos/CDH/backend-api/src/main/java/com/viajez/cdh/restapi/controllers/exception/NotFoundException.java",
+		"/Users/antonimmo/repos/CDH/backend-api/src/main/webapp/WEB-INF/web.xml",
+		"/Users/antonimmo/repos/Duke/src/main/java/no/priv/garshol/duke/databases/DocumentRecord.java",
+		"/Users/antonimmo/repos/CDH/backend-api/src/main/java/com/viajez/cdh/restclient/CVCAPIClient.java",
+		"/Users/antonimmo/repos/CDH/WSDL-Client/src/main/java/com/viajez/sabrewsdlclient/Chronometer.java",
+		"/Users/antonimmo/repos/CDH/backend-api/src/main/java/com/viajez/cdh/restapi/controllers/CDHController.java",
+		"/Users/antonimmo/repos/CDH/backend-api/src/main/java/com/viajez/cdh/restapi/controllers/SessionController.java",
+		"/Users/antonimmo/repos/CDH/backend-api/src/main/java/com/viajez/cdh/restclient/CVCSessionPool.java",
+		"/Users/antonimmo/repos/CDH/backend-api/src/main/java/com/viajez/cdh/restapi/controllers/exception/ConflictException.java",
+		"/Users/antonimmo/repos/CDH/backend-api/src/main/java/com/viajez/cdh/restapi/security/JDBCUsersSource.java",
+		"/Users/antonimmo/repos/CDH/backend-api/src/main/java/com/viajez/cdh/restapi/security/AbstractUsersSource.java",
+		"/Users/antonimmo/repos/CDH/backend-api/src/main/java/com/viajez/cdh/database/DBConnection.java",
+		"/Users/antonimmo/repos/CDH/backend-api/src/main/java/com/viajez/cdh/database/jdbc/JDBCConnection.java",
+		"/Users/antonimmo/repos/luceneindexesapi/src/main/java/com/viajez/machinelearning/luceneapi/util/LuceneIndexFactory.java",
+		"/Users/antonimmo/repos/CDH/backend-api/src/main/java/com/viajez/cdh/machinelearning/prediction/Predictor.java",
+		"/Users/antonimmo/repos/Duke/src/main/java/no/priv/garshol/duke/Property.java",
+		"/Users/antonimmo/repos/Duke/src/main/java/no/priv/garshol/duke/PropertyImpl.java",
+		"/Users/antonimmo/repos/Duke/src/main/java/no/priv/garshol/duke/matchers/AbstractMatchListener.java",
+		"/Users/antonimmo/repos/Duke/src/main/java/no/priv/garshol/duke/matchers/MatchListener.java",
+		"/Users/antonimmo/repos/travelbi-etl/sources/java/DukeAndMongoDB/src/com/viajez/etl/customerIdentification/matchers/CustomMatchListener.java",
+		"/Users/antonimmo/repos/Duke/src/main/java/no/priv/garshol/duke/Duke.java",
+		"/Users/antonimmo/repos/luceneindexesapi/target/antrun/build-main.xml",
+		"/Users/antonimmo/repos/Duke/pom.xml",
+		"/Users/antonimmo/repos/travelbi-etl/sources/java/DukeAndMongoDB/src/com/viajez/etl/customerIdentification/DeduplicateCustomers.java",
+		"/Users/antonimmo/repos/Duke/src/main/java/no/priv/garshol/duke/ConfigLoader.java",
+		"/Users/antonimmo/twdump.json",
+		"/Users/antonimmo/repos/CDH/backend-api/src/main/java/com/viajez/cdh/restapi/models/ResponseGetParameterSets.java",
+		"/Users/antonimmo/repos/Duke/src/main/java/no/priv/garshol/duke/Database.java"
+	],
+	"find":
+	{
+		"height": 40.0
+	},
+	"find_in_files":
+	{
+		"height": 101.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 24.0
+	},
+	"input":
+	{
+		"height": 40.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.SublimeLinter":
+	{
+		"height": 0.0
+	},
+	"output.exec":
+	{
+		"height": 226.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"output.unsaved_changes":
+	{
+		"height": 100.0
+	},
+	"pinned_build_system": "Packages/Conda/Conda.sublime-build",
+	"project": "tesis-spectralanalysys.sublime-project",
+	"replace":
+	{
+		"height": 44.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"",
+				"/Volumes/GoogleDrive/Mon Drive/Cuatrimestre 2019-II/Modelación/modelado.sublime-project"
+			]
+		],
+		"width": 380.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": false,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 194.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

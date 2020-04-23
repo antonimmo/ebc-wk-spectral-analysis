@@ -1,0 +1,14 @@
+name: tesis-spectralanalysis
+channels:
+- defaults
+dependencies:
+- matplotlib
+- netcdf4
+- numpy
+- pip
+- python=3.5.4=0
+- python-dateutil
+- six
+- pandas
+- geopandas
+
