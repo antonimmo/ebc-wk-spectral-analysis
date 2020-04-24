@@ -17,7 +17,7 @@ from .utils_thesis import get_latlonid,coriolis,igw_disp_rel,igw_bm_partition_k
 #mpl.rcParams['xtick.direction'] = 'out'
 #mpl.rcParams['ytick.direction'] = 'out'
 #mpl.rcParams['font.family']='DejaVu Sans' # Era Times New Roman, pero ni en Colab ni en OSX funciona
-mpl.rcParams['font.size'] = 24
+#mpl.rcParams['font.size'] = 24
 
 ## Frecuencias de marea
 #K1 = 1./23.93

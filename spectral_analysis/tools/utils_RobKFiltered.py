@@ -3,7 +3,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 import numpy as np
-mpl.rcParams['font.size'] = 16
+#mpl.rcParams['font.size'] = 16
 
 def plot_filtered_daily(id,rob_season='daily',t=0,Lt=None,show_boxplot=False,show_histogram=False,hist_max_x=None,hist_bins=20):
     dat = Dataset("/home/antonio/Tesis/Rob_k_filtered/{}/days/Rob_{}.nc".format(id,rob_season),'r')
