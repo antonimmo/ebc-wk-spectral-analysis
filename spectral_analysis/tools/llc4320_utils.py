@@ -3,6 +3,8 @@ import xarray as xr
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 from xmitgcm import llcreader,open_mdsdataset
+#
+from ..preprocess.common_vars import MODEL_FOLDER
 
 ## Importing model data
 model = llcreader.ECCOPortalLLC4320Model()
@@ -12,7 +14,8 @@ vars_wf = ["U","V","Theta"] # Variables del modelo
 ds = model.get_dataset(varnames=vars_wf,k_chunksize=1,type=map_mode,iter_step=144*24) # 144 iters = 1 hr
 
 ## Importing model grid
-grid_ds = open_mdsdataset('/home/antonio/GoogleDrive/LLC2160/grid/', read_grid=True, iters=None, default_dtype=np.float32, geometry='llc')
+grid_path = "{}/LLC2160/grid/".format(MODEL_FOLDER)
+grid_ds = open_mdsdataset(grid_path, read_grid=True, iters=None, default_dtype=np.float32, geometry='llc')
 
 
 ## Interpolating grid (from 1/24 to 1/48)

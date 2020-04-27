@@ -4,13 +4,14 @@ import xarray as xr
 import numpy as np
 import matplotlib.pyplot as plt
 # Imports within the same package
+from .common_vars import DATA_FOLDER
 from ..tools.utils_thesis import coriolis
 
 #client = Client(n_workers=2, threads_per_worker=2, memory_limit='1GB')
 #pritn(client)
 
 N = 250 # Cada cuantos elementos vamos submuestrear --  evitamos leer todo el dataset, ya que no es necesario
-etopo_fn = 'ETOPO1/ETOPO1_Bed_g_gmt4.grd'
+etopo_fn = '{}/ETOPO1/ETOPO1_Bed_g_gmt4.grd'.format(DATA_FOLDER)
 
 print("Opening ETOPO1 dataset")
 xds = xr.open_dataset(etopo_fn)
@@ -37,7 +38,7 @@ etopo_gdf['H'] = -z # Revertimos el signo, ya que necesitamos la profundidad H
 
 #
 print("Reading data c1 y Rd1 (Chelton et al., 1998)")
-rossby_cRd_folder = 'chelton__baroclinic_c_Rd'
+rossby_cRd_folder = '{}/chelton__baroclinic_c_Rd'.format(DATA_FOLDER)
 rossby_cRd = read_csv("{}/rossrad.dat".format(rossby_cRd_folder),sep=' +',names=['lat_cRd','lon_cRd','c1','Rd1'])
 rossby_cRd["lon_cRd"] = rossby_cRd["lon_cRd"].map(lambda x: x if x<180 else x-360) # Corregimos la longitud.
 
@@ -54,7 +55,7 @@ s = rossby_cRd["Rd1"]
 #plt.show()
 
 #
-poly_fn = 'map_data/KE_ASO_geo.json'
+poly_fn = '{}/by_region/KE_ASO_geo.json'.format(DATA_FOLDER)
 print("Getting polygons from {}".format(poly_fn))
 poly_cols = ['lat','lon','s_id','geometry'] # We only need id and geometry
 poly_gdf = gpd.read_file(poly_fn,driver='GeoJSON').set_index('s_id',drop=False)[poly_cols]
@@ -85,7 +86,7 @@ geodata_all['Nbv_cph_2'] = np.pi*np.divide(np.multiply(np.abs(geodata_all['f_cph
 
 geodata_all.head()
 
-out_fn = 'merged_Rd_c1_H_Nbv.csv'
+out_fn = '{}/merged_Rd_c1_H_Nbv.csv'.format(DATA_FOLDER)
 print("Saving as CSV: {}".format(out_fn))
 geodata_all.to_csv(out_fn)
 

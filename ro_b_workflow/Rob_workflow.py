@@ -11,20 +11,21 @@ from luigi.rpc import RemoteScheduler
 from netCDF4 import Dataset
 from xmitgcm import llcreader,open_mdsdataset
 from scipy.interpolate import interp2d
+##
+from ..spectral_analysis.preprocess.common_vars import MODEL_FOLDER,DATA_FOLDER,LUIGI_OUT_FOLDER
 
 logging.basicConfig(
-    format='%(asctime)s %(levelname)-8s %(message)s',
+    format="%(asctime)s %(levelname)-8s %(message)s",
     level=logging.INFO,
-    datefmt='%Y-%m-%d %H:%M:%S')
+    datefmt="%Y-%m-%d %H:%M:%S")
 
 # Directorio de los datos geográficos
-prnt_map = '/home/antonio/GoogleDrive/Tesis/spectral_analysis/map_data'
+prnt_map = "{}/map_data".format(DATA_FOLDER)
 # Directorios de entrada
-grid_path = "/home/antonio/GoogleDrive/LLC2160/grid"
+grid_path = "{}/LLC2160/grid/".format(MODEL_FOLDER)
 # Directorios de salida
-prnt = "/home/antonio/Tesis"
-ds_path_fmt = "{}/Datasets_compressed/{}/{}"
-filtered_path_fmt = "{}/Rob_k_filtered/{}/{}"
+ds_path_fmt = LUIGI_OUT_FOLDER + "/Datasets_compressed/{}/{}"
+filtered_path_fmt = LUIGI_OUT_FOLDER + "/Rob_k_filtered/{}/{}"
 
 #min_i,min_j = 576,864	## Esquina inferior izquierda
 #max_i,max_j = 865,1155	## Esquina superior derecha
@@ -98,7 +99,7 @@ class GridMdsBase():
 	    nrow,ncol = grid_mat.shape
 	    rows = np.arange(nrow)
 	    cols = np.arange(ncol)
-	    interp = interp2d(cols,rows,grid_mat,kind='cubic')
+	    interp = interp2d(cols,rows,grid_mat,kind="cubic")
 	    # New 
 	    new_r = np.arange(nrow*2)/2
 	    new_c = np.arange(ncol*2)/2
@@ -107,7 +108,7 @@ class GridMdsBase():
 	def get_grid_ds(self):
 		if self.grid_ds is None:
 			logging.info("Reading grid Dataset")
-			self.grid_ds = open_mdsdataset(grid_path, read_grid=True, iters=None, default_dtype=np.float32, geometry='llc').isel(face=self.area_face)
+			self.grid_ds = open_mdsdataset(grid_path, read_grid=True, iters=None, default_dtype=np.float32, geometry="llc").isel(face=self.area_face)
 		return self.grid_ds
 
 	def get_dxdy24(self):
@@ -152,7 +153,7 @@ class GridMdsBase():
 
 	def read_indexes(self,area_id):
 		logging.info("Reading indexes for area {}".format(area_id))
-		with open("{}/lonlat_indexes.txt".format(ds_path_fmt.format(prnt,area_id,self.time_prefix)),'r') as f:
+		with open("{}/lonlat_indexes.txt".format(ds_path_fmt.format(area_id,self.time_prefix)),'r') as f:
 			idxx = tuple([int(x) for x in f.read().split(',')])
 			logging.info("Indexes for area {}, ({})".format(area_id,idxx))
 			return idxx
@@ -176,9 +177,9 @@ class SliceArea(Task,GridMdsBase):
 
 	def get_indexes(self):
 		if self.area_id>0:
-			geodata = gpd.read_file('{}/{}_{}_geo.json'.format(prnt_map,'RV',"ASO"),driver='GeoJSON')
+			geodata = gpd.read_file("{}/{}_{}_geo.json".format(prnt_map,"RV","ASO"),driver="GeoJSON")
 			data_area = geodata[geodata["s_id"]==self.area_id].drop(columns=["season","var"])
-			area_box = data_area['geometry'].values[0]
+			area_box = data_area["geometry"].values[0]
 			lon_min,lat_min,lon_max,lat_max = area_box.bounds
 			logging.info("Area {} box bounds (from geojson) {},{},{},{}:".format(self.area_id,lon_min,lat_min,lon_max,lat_max))
 		else:
@@ -203,13 +204,13 @@ class SliceArea(Task,GridMdsBase):
 
 	def output(self):
 		if self._target is None:
-			self._target = LocalTarget("{}/lonlat_indexes.txt".format(ds_path_fmt.format(prnt,self.area_id,self.time_prefix)))
+			self._target = LocalTarget("{}/lonlat_indexes.txt".format(ds_path_fmt.format(self.area_id,self.time_prefix)))
 			self._target.makedirs()
 		return self._target
 
 	def output2(self):
 		if self._target2 is None:
-			self._target2 = LocalTarget("{}/lonlat_box.txt".format(ds_path_fmt.format(prnt,self.area_id,self.time_prefix)))
+			self._target2 = LocalTarget("{}/lonlat_box.txt".format(ds_path_fmt.format(self.area_id,self.time_prefix)))
 			self._target2.makedirs()
 		return self._target2
 
@@ -226,9 +227,9 @@ class GetGrid(Task,GridMdsBase):
 		DX_48 = DX_48[min_j:max_j,min_i:max_i]
 		DY_48 = DY_48[min_j:max_j,min_i:max_i]
 		logging.info("Saving dx,dy")
-		fname_dx = "{}/dx.txt".format(ds_path_fmt.format(prnt,self.area_id,self.time_prefix))
+		fname_dx = "{}/dx.txt".format(ds_path_fmt.format(self.area_id,self.time_prefix))
 		np.savetxt(fname_dx,DX_48,fmt='%s')
-		fname_dy = "{}/dy.txt".format(ds_path_fmt.format(prnt,self.area_id,self.time_prefix))
+		fname_dy = "{}/dy.txt".format(ds_path_fmt.format(self.area_id,self.time_prefix))
 		np.savetxt(fname_dy,DY_48,fmt='%s')
 
 	def get_lonlatf(self,min_j,max_j,min_i,max_i):
@@ -242,17 +243,17 @@ class GetGrid(Task,GridMdsBase):
 		FCOR_48 = 2*Omega*sin_lat
 
 		logging.info("Saving lon,lat,f")
-		fname_lon = "{}/lon.txt".format(ds_path_fmt.format(prnt,self.area_id,self.time_prefix))
+		fname_lon = "{}/lon.txt".format(ds_path_fmt.format(self.area_id,self.time_prefix))
 		np.savetxt(fname_lon,LON_48,fmt='%s')
-		fname_lat = "{}/lat.txt".format(ds_path_fmt.format(prnt,self.area_id,self.time_prefix))
+		fname_lat = "{}/lat.txt".format(ds_path_fmt.format(self.area_id,self.time_prefix))
 		np.savetxt(fname_lat,LAT_48,fmt='%s')
-		fname_lat = "{}/f.txt".format(ds_path_fmt.format(prnt,self.area_id,self.time_prefix))
+		fname_lat = "{}/f.txt".format(ds_path_fmt.format(self.area_id,self.time_prefix))
 		np.savetxt(fname_lat,FCOR_48,fmt='%s')
 		
 
 	def output(self):
 		if self._target is None:
-			self._target = [LocalTarget("{}/{}.txt".format(ds_path_fmt.format(prnt,self.area_id,self.time_prefix),var_)) for var_ in ["dx","dy","lon","lat","f"]]
+			self._target = [LocalTarget("{}/{}.txt".format(ds_path_fmt.format(self.area_id,self.time_prefix),var_)) for var_ in ["dx","dy","lon","lat","f"]]
 			self._target[0].makedirs()
 		return self._target
 
@@ -281,7 +282,7 @@ class GetVelocities(Task,GridMdsBase):
 			hourly_step = 24 if (self.time_prefix=="days") else 1
 			logging.info("Class GetVelocities - reading variables ({}) Dataset (face={},t={},t_ds={})".format(vars_wf,self.area_face,self.t,self.t_ds))				# 144 iters = 1 hr, so 144*24 = 1 day
 			self.ds_area = model.get_dataset(
-				varnames=vars_wf,k_chunksize=len(k_lvl_idx),type='faces',iter_step=144*hourly_step
+				varnames=vars_wf,k_chunksize=len(k_lvl_idx),type="faces",iter_step=144*hourly_step
 				).isel(time=self.t,face=self.area_face,k=k_lvl_idx)
 			self.t_ds = self.ds_area.time.values
 		return self.ds_area
@@ -302,7 +303,7 @@ class GetVelocities(Task,GridMdsBase):
 				self.uv_vals = np.rot90(self.uv_vals)
 
 	def save_uv_area(self,area_id,model_var,k_idx,k_suffix,min_j,max_j,min_i,max_i):
-		fname_uv = "{}/{}{}_{:05d}.npz".format(ds_path_fmt.format(prnt,area_id,self.time_prefix),model_var,k_suffix,self.t)
+		fname_uv = "{}/{}{}_{:05d}.npz".format(ds_path_fmt.format(area_id,self.time_prefix),model_var,k_suffix,self.t)
 		if os.path.exists(fname_uv) and os.path.getsize(fname_uv)>0:
 			logging.info("Already exists. Skipping -- {}".format(fname_uv))
 		else:
@@ -317,7 +318,7 @@ class GetVelocities(Task,GridMdsBase):
 	def output(self):
 		if self._target is None:
 			self._target = [
-				LocalTarget("{}/{}{}_{:05d}.npz".format(ds_path_fmt.format(prnt,area_id,self.time_prefix),var_,z_,self.t)) 
+				LocalTarget("{}/{}{}_{:05d}.npz".format(ds_path_fmt.format(area_id,self.time_prefix),var_,z_,self.t)) 
 				for var_ in vars_wf for z_ in k_lvl_suffixes for area_id in faces_regions[self.area_face]
 			]
 			self._target[0].makedirs()
@@ -364,20 +365,20 @@ class CreateNetCDF(Task,GridMdsBase):
 
 	def init(self):
 		if (self.dx is None) or (self.dy is None):
-			name_dx = "{}/dx.txt".format(ds_path_fmt.format(prnt,self.area_id,self.time_prefix))
+			name_dx = "{}/dx.txt".format(ds_path_fmt.format(self.area_id,self.time_prefix))
 			self.dx = np.loadtxt(name_dx)
-			name_dy = "{}/dy.txt".format(ds_path_fmt.format(prnt,self.area_id,self.time_prefix))
+			name_dy = "{}/dy.txt".format(ds_path_fmt.format(self.area_id,self.time_prefix))
 			self.dy = np.loadtxt(name_dy)
 		if (self.f_cor is None) or (self.lat is None):
 			# f_cor
-			fname_f = "{}/f.txt".format(ds_path_fmt.format(prnt,self.area_id,self.time_prefix))
+			fname_f = "{}/f.txt".format(ds_path_fmt.format(self.area_id,self.time_prefix))
 			self.f_cor = np.loadtxt(fname_f)
-			fname_lat = "{}/lat.txt".format(ds_path_fmt.format(prnt,self.area_id,self.time_prefix))
+			fname_lat = "{}/lat.txt".format(ds_path_fmt.format(self.area_id,self.time_prefix))
 			self.lat = np.loadtxt(fname_lat)
 			
 		if (self.Kx is None) or (self.Ky is None):
 			# Kx,Ky
-			fname_lon = "{}/lon.txt".format(ds_path_fmt.format(prnt,self.area_id,self.time_prefix))
+			fname_lon = "{}/lon.txt".format(ds_path_fmt.format(self.area_id,self.time_prefix))
 			self.lon = np.loadtxt(fname_lon)
 			#logging.info("lon shape".format(self.lon.shape))
 			Ny = self.lon.shape[0]
@@ -431,9 +432,9 @@ class CreateNetCDF(Task,GridMdsBase):
 		## Z=0
 		# Reading
 		logging.info("U0")
-		self.u0 = np.loadtxt("{}/U0_{:05d}.txt".format(ds_path_fmt.format(prnt,self.area_id,self.time_prefix),self.t))
+		self.u0 = np.loadtxt("{}/U0_{:05d}.txt".format(ds_path_fmt.format(self.area_id,self.time_prefix),self.t))
 		logging.info("V0")
-		self.v0 = np.loadtxt("{}/V0_{:05d}.txt".format(ds_path_fmt.format(prnt,self.area_id,self.time_prefix),self.t))
+		self.v0 = np.loadtxt("{}/V0_{:05d}.txt".format(ds_path_fmt.format(self.area_id,self.time_prefix),self.t))
 		# Filtering
 		logging.info ("Filter 0")
 		self.u0_lo,self.u0_hi = self.filter_fft(self.u0)
@@ -442,9 +443,9 @@ class CreateNetCDF(Task,GridMdsBase):
 		## Z=H
 		# Reading
 		logging.info("UH")
-		self.uH = np.loadtxt("{}/UH_{:05d}.txt".format(ds_path_fmt.format(prnt,self.area_id,self.time_prefix),self.t))
+		self.uH = np.loadtxt("{}/UH_{:05d}.txt".format(ds_path_fmt.format(self.area_id,self.time_prefix),self.t))
 		logging.info("VH")
-		self.vH = np.loadtxt("{}/VH_{:05d}.txt".format(ds_path_fmt.format(prnt,self.area_id,self.time_prefix),self.t))
+		self.vH = np.loadtxt("{}/VH_{:05d}.txt".format(ds_path_fmt.format(self.area_id,self.time_prefix),self.t))
 		# Filtering
 		logging.info("Filter H")
 		self.uH_lo,self.uH_hi = self.filter_fft(self.uH)
@@ -501,7 +502,7 @@ class CreateNetCDF(Task,GridMdsBase):
 	def to_netcdf(self):
 		fn_out = self.output().path
 		logging.info("Saving to NetCDF: {}".format(fn_out))
-		nc = Dataset(fn_out,'w','NETCDF3')
+		nc = Dataset(fn_out,'w',"NETCDF3")
 		## Dims
 		nlon,nlat=self.lon.shape
 		nc.createDimension('nlon',nlon)
@@ -585,7 +586,7 @@ class CreateNetCDF(Task,GridMdsBase):
 
 	def output(self):
 		if self._target is None:
-			self._target = LocalTarget("{}/Rob_{:05d}.nc".format(filtered_path_fmt.format(prnt,self.area_id,self.time_prefix),self.t))
+			self._target = LocalTarget("{}/Rob_{:05d}.nc".format(filtered_path_fmt.format(self.area_id,self.time_prefix),self.t))
 			self._target.makedirs()
 		return self._target
 

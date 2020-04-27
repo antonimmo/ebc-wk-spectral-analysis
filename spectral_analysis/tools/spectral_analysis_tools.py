@@ -238,7 +238,7 @@ def plot_wk_forvar(fname,var,plot_igw_bm=False,Nbv=0.8594,H=4,wk_only=False,log=
 		plot_bm_igw_k(kiso,omega,E,lat,Nbv=Nbv,H=H,log=log)
 
 def plot_wk_forseasonvarid(prnt_folder,season,var,id,Nbv=0.8594,H=4,wk_only=False,log=True):
-	with open("{}/spectra_db/all_{}_{}.json".format(prnt_folder,season,var),'r') as f:
+	with open("{}/spectra/db/all_{}_{}.json".format(prnt_folder,season,var),'r') as f:
 		data = json.load(f)
 	s_id = str(id)
 	#lat = data[s_id]['lat']
@@ -254,7 +254,7 @@ def find_closest_idx(np_arr,val):
 	return found[0][0]
 
 def plot_bm_igw_k_forfolderid(folder,season,var,id,scales_km,Nbv=0.8594,H=4,log=True,colour=None,alpha=1):
-	with open("{}/spectra_db/all_{}_{}.json".format(folder,season,var),'r') as f:
+	with open("{}/spectra/db/all_{}_{}.json".format(folder,season,var),'r') as f:
 		data = json.load(f)
 	s_id = str(id)
 	lat = data[s_id]['lat']

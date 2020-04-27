@@ -2,7 +2,7 @@ import json
 import numpy as np
 from os import listdir
 # Imports within the same package
-from .common_vars import data_folder
+from .common_vars import DATA_FOLDER
 from ..tools.utils_thesis import get_latlonid
 
 seasons_ = ['ASO','JFM']
@@ -33,5 +33,5 @@ for season in seasons_:
 					'season_hemisphere': season_h
 				}
 
-		with open("{}/spectra_db/all_{}_{}.json".format(data_folder,season,var),'w') as out:
+		with open("{}/spectra/db/all_{}_{}.json".format(DATA_FOLDER,season,var),'w') as out:
 			json.dump(data,out)

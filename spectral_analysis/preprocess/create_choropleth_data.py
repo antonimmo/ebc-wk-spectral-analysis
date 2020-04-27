@@ -2,7 +2,7 @@ import json
 import numpy as np
 from os import mkdir
 # Imports within the same package
-from .common_vars import data_folder
+from .common_vars import DATA_FOLDER
 from ..tools.spectral_analysis_tools import open_ds_kwe
 from ..tools.utils_thesis import get_latlonid,listdir_withext
 
@@ -136,7 +136,7 @@ def generate_files(out_folder,season,var,prop):
 ## ** Program 
 propList = ['avg','rms','stdev','sum']
 
-out_folder = '{}/map_data'.format(data_folder)
+out_folder = '{}/by_region'.format(DATA_FOLDER)
 mkdir_(out_folder)	# Creates output folder if it doesn't exist
 for season in ['ASO','JFM']:
 	for var in ['DIV','KE','RV','SSH']:
