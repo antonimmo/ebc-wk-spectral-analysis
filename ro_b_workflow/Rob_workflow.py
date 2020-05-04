@@ -14,7 +14,7 @@ from scipy.interpolate import interp2d
 # Imports within the same package
 from ..common_vars.time_slices import max_iter,idx_t
 from ..common_vars.regions import faces_regions
-from ..spectral_analysis.preprocess.common_vars import MODEL_FOLDER,DATA_FOLDER,LUIGI_OUT_FOLDER
+from ..common_vars.directories import MODEL_FOLDER,DATA_FOLDER,LUIGI_OUT_FOLDER
 
 logging.basicConfig(
     format="%(asctime)s %(levelname)-8s %(message)s",
