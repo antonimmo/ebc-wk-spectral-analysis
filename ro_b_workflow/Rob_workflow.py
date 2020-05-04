@@ -11,7 +11,9 @@ from luigi.rpc import RemoteScheduler
 from netCDF4 import Dataset
 from xmitgcm import llcreader,open_mdsdataset
 from scipy.interpolate import interp2d
-##
+# Imports within the same package
+from ..common_vars.time_slices import max_iter,idx_t
+from ..common_vars.regions import faces_regions
 from ..spectral_analysis.preprocess.common_vars import MODEL_FOLDER,DATA_FOLDER,LUIGI_OUT_FOLDER
 
 logging.basicConfig(
@@ -36,55 +38,14 @@ filtered_path_fmt = LUIGI_OUT_FOLDER + "/Rob_k_filtered/{}/{}"
 
 Omega = 2*np.pi/(24*3600) # Frecuencia de rotación terrestre
 vars_wf = ["U","V"] # Variables del modelo
-#k_lvl_idx = [0, 36]  ## z=0 m, z=-400 m (39 para z=-500 m)
-#k_lvl_suffixes = ["0","H"]
-k_lvl_idx = [0]
-k_lvl_suffixes = ["0"]
+k_lvl_idx = [0, 36]  ## z=0 m, z=-400 m (39 para z=-500 m)
+k_lvl_suffixes = ["0","H"]
+#k_lvl_idx = [0]
+#k_lvl_suffixes = ["0"]
 
-## Dias
-# Tiempos correspondientes a los 91 días de JFM
-idx_t_JFM_days = [i for i in range(377) if i>=110 and i<201]
-# Tiempos correspondientes a los 92 días de ASO 2011-2012  * Antiguo
-#idx_t_ASO = [i for i in range(377) if i>=323 or i<48]
-# Tiempos correspondientes a los 85 días de JAS 2012
-idx_t_JAS_days = [i for i in range(377) if i>=292]
-
-## Horas
-# Tiempos correspondientes a los 91*24 horas de JFM
-idx_t_JFM_hours = [(24*i)+hr for i in range(377) if i>=110 and i<201 for hr in range(24)]
-# Tiempos correspondientes a los 85*24-18 horas de JAS 2012. El 23 de septiembre solo tiene hasta las 5:00 h
-idx_t_JAS_hours = [(24*i)+hr for i in range(377) if i>=292  for hr in range(24)][:-18]
-
-idx_t = {
-	"days": {
-		"JFM": idx_t_JFM_days,
-		"JAS": idx_t_JAS_days,
-		"JFMJAS": idx_t_JFM_days+idx_t_JAS_days
-	},
-	"hours": {
-		"JFM": idx_t_JFM_hours,
-		"JAS": idx_t_JAS_hours,
-		"JFMJAS": idx_t_JFM_hours+idx_t_JAS_hours
-	}
-}
-
+## For test purposes only
 area_latlonbox = {
 	0: (-122.0,29.096750000000014,-116.0,33.827249999999985)
-}
-
-ids_Cal1 = [762, 787]			# test:0 California -- 23 to 51 N
-ids_Cal2 = [809, 831, 852, 868] # .. (cont) Para las longitudes menores a 128
-ids_Can = [709, 730, 750, 771] # Canarias -- 16 to 36 N
-ids_Peru = [450, 572, 596, 616, 636] # Peru Chile -- 5 to 45 S
-ids_Ben = [533, 556, 578, 602, 459] # Benguela -- 15 to 37 S ** Quitamos la **459** y ponemos la 602
-ids_Kuro = [733, 751, 796]
-
-faces_regions = {
-	1: ids_Ben,
-	2: ids_Can,
-	7: ids_Kuro+ids_Cal2,
-	10: ids_Cal1,
-	11: ids_Peru
 }
 
 class GridMdsBase():
@@ -279,6 +240,7 @@ class GetVelocities(Task,GridMdsBase):
 		if self.ds_area is None:
 			#self.read_indexes(area_id)
 			model = llcreader.ECCOPortalLLC4320Model()
+			model.iter_stop = max_iter
 			hourly_step = 24 if (self.time_prefix=="days") else 1
 			logging.info("Class GetVelocities - reading variables ({}) Dataset (face={},t={},t_ds={})".format(vars_wf,self.area_face,self.t,self.t_ds))				# 144 iters = 1 hr, so 144*24 = 1 day
 			self.ds_area = model.get_dataset(
@@ -654,7 +616,7 @@ if __name__ == "__main__":
 	logging.info("Starting Luigi tasks")
 	#n_workers = multiprocessing.cpu_count()
 	n_workers = 5
-	wf_result = luigi.build([DownloadVelocities(time_prefix="hours",season="JFMJAS")], workers=n_workers, detailed_summary=True)
+	wf_result = luigi.build([DownloadVelocities(time_prefix="hours",season="JFMASO")], workers=n_workers, detailed_summary=True)
 	#wf_result = luigi.build([SliceAll()], workers=n_workers, detailed_summary=True)
 	
 	#wf_result = luigi.build([ProcessRegion(region_id=771,Lt_km=75)], workers=n_workers, detailed_summary=True)
