@@ -2,7 +2,7 @@ import json
 import numpy as np
 from os import listdir
 # Imports within the same package
-from .common_vars import DATA_FOLDER
+from ..common_vars.directories import DATA_FOLDER
 from ..tools.utils_thesis import get_latlonid
 
 seasons_ = ['ASO','JFM']

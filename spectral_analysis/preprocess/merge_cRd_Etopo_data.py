@@ -4,7 +4,7 @@ import xarray as xr
 import numpy as np
 import matplotlib.pyplot as plt
 # Imports within the same package
-from .common_vars import DATA_FOLDER
+from ..common_vars.directories import DATA_FOLDER
 from ..tools.utils_thesis import coriolis
 
 #client = Client(n_workers=2, threads_per_worker=2, memory_limit='1GB')

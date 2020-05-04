@@ -2,7 +2,7 @@ import json
 import numpy as np
 from os import mkdir
 # Imports within the same package
-from .common_vars import DATA_FOLDER
+from ..common_vars.directories import DATA_FOLDER
 from ..tools.spectral_analysis_tools import open_ds_kwe
 from ..tools.utils_thesis import get_latlonid,listdir_withext
 

@@ -1,8 +1,8 @@
 import json
 from os import listdir
 # Imports within the same package
-from .common_vars import DATA_FOLDER
 from .create_choropleth_data import get_latlonid
+from ..common_vars.directories import DATA_FOLDER
 
 jsondb = {}
 
