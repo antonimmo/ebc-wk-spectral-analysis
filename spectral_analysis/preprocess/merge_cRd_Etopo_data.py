@@ -73,7 +73,7 @@ geodata_cRd.head()
 print("Combining result with ETOPO1 data")
 geodata_all = gpd.sjoin(poly_gdf,etopo_gdf.reset_index(),how='inner',op='intersects') # reset_index elimina los indices x,y para volverlo simple (secuencial)
 #print(geodata_all.shape)
-print("Calculating avg depth per polygon")
+print("Calculating avg depth and f_cph per polygon")
 geodata_all = geodata_all.groupby(["s_id"]).agg({"H": np.mean, "f_cph": np.mean})
 
 print("Combining all results")

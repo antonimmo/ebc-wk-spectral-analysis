@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 from xmitgcm import llcreader,open_mdsdataset
 #
-from ..preprocess.common_vars import MODEL_FOLDER
+from ..common_vars.directories import MODEL_FOLDER
 
 ## Importing model data
 model = llcreader.ECCOPortalLLC4320Model()

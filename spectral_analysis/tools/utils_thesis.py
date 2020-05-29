@@ -28,18 +28,24 @@ def igw_bm_partition_k(kh,f,max_freq,Nbv=0.8594,H=4,log=True):
 	f_abs = np.abs(f)
 	return [min(freq,max_freq) for freq in igw10]
 	
+## Units:
+## kh,H: km
+## f,Nbv: cph
 def igw_disp_rel(kh,f,nn,Nbv=0.8594,H=4,log=True):
 	if log:
 		print("N={0:.3f},H={1:.3f} - mode {2}".format(Nbv,H,nn))
 	#khnp_2 = (kh*H/(nn*np.pi))**2
-	kh = (2*np.pi)*kh
+	kh = (2*np.pi)*kh 	# Transform to rad/km
 	khnp_2 = (nn*np.pi/(kh*H))**2
 	igw_n = np.sqrt( (Nbv**2 + (f**2)*khnp_2)/(1+khnp_2) )
+	#cn = (Nbv*H/(nn*np.pi))
+	#igw_n = np.sqrt( (f**2 + (cn*kh)**2))/(1) )
 	return igw_n
 	#return np.sqrt( (f**2 + (kh*nn)**2) )
 
+# Tested with https://www.mt-oceanography.info/Utilities/coriolis.html
 def coriolis(lat):
-    omg = (1.)/24
+    omg = (1.)/24 	# cicles/day
     return 2*(omg)*np.sin((lat*3.141519)/180)
 
 def listdir_withext(folder, ext):

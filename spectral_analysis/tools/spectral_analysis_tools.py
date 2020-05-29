@@ -18,6 +18,14 @@ from .utils_thesis import get_latlonid,coriolis,igw_disp_rel,igw_bm_partition_k
 #mpl.rcParams['ytick.direction'] = 'out'
 #mpl.rcParams['font.family']='DejaVu Sans' # Era Times New Roman, pero ni en Colab ni en OSX funciona
 #mpl.rcParams['font.size'] = 24
+temp_rcParams = {
+	'axes.linewidth': 2,
+	'xtick.labelsize': 20,
+	'ytick.labelsize': 20,
+	'xtick.direction': 'out',
+	'ytick.direction': 'out',
+	'font.size': 24
+}
 
 ## Frecuencias de marea
 #K1 = 1./23.93
@@ -50,91 +58,95 @@ def open_ds_kwe(fname,log=True):
 
 	# Nbv = 0.8594 cph ---> 1.5e-3 rad/s Orden "tipico" para la frecuencia de Brunt-Vaisala
 	# H: Profundidad media, en km
-def plot_wk_integrated(kiso,omega,E,lat,clim,Nbv=0.8594,H=4,wk_only=False,log=True,igw_modes=[1,2,3,4]):
+def plot_wk_integrated(kiso,omega,E,lat,clim,Nbv=0.8594,H=4,wk_only=False,show_coriolis=True,show_tides=True,igw_modes=[1,2,3,4],log=True):
 	##::::::::: Setting the figure :::::::::::
-	fig = plt.figure(figsize=(14,12))
-	if not wk_only:
-		ax1 = plt.subplot2grid((3,3),(0,1),colspan=2)
-		ax2 = plt.subplot2grid((3,3),(1,0),rowspan=2)
-	ax3 = plt.subplot2grid((3,3),(1,1),rowspan=2, colspan=2)
+	with plt.rc_context(temp_rcParams):
+		fig = plt.figure(figsize=(14,12))
+		if not wk_only:
+			ax1 = plt.subplot2grid((3,3),(0,1),colspan=2)
+			ax2 = plt.subplot2grid((3,3),(1,0),rowspan=2)
+		ax3 = plt.subplot2grid((3,3),(1,1),rowspan=2, colspan=2)
 
-	#::::::::: Frequency-Wavenumber spectrum :::::::
-	cs=plt.pcolormesh(kiso,omega,
-	              E.T*kiso[None,...]*omega[...,None],
-	             cmap='nipy_spectral_r',norm = LogNorm())
-	plt.clim(clim)
-	ax3.set_yscale('log')
-	ax3.set_xscale('log')
-	ax3.set_ylim(1/(24*45.),1/3.)
-	ax3.set_xlim(1/270.,1/10.)
-	ax3.set_yticks([])
-	#### Some relevant frequencies
-	f = np.abs(coriolis(lat)) ## < ========== Latitude from the name
-	ks = np.array([1.e-3,1.])
-	# Graficamos la banda f
-	ax3.plot(ks,[f,f],'w-',linewidth=3.)
-	ax3.text(1/200.,f-0.015,r'$f$',color='w',size='large')
+		#::::::::: Frequency-Wavenumber spectrum :::::::
+		cs=plt.pcolormesh(kiso,omega,
+		              E.T*kiso[None,...]*omega[...,None],
+		             cmap='nipy_spectral_r',norm = LogNorm())
+		plt.clim(clim)
+		ax3.set_yscale('log')
+		ax3.set_xscale('log')
+		ax3.set_ylim(1/(24*45.),1/3.)
+		ax3.set_xlim(1/270.,1/10.)
+		ax3.set_yticks([])
+		#### Some relevant frequencies
+		f = np.abs(coriolis(lat)) ## < ========== Latitude from the name
+		ks = np.array([1.e-3,1.])
+		# Graficamos la banda f
+		if show_coriolis:
+			ax3.plot(ks,[f,f],'w-',linewidth=3.)
+			ax3.text(1/200.,f*0.65,r'$f$',color='w',size='x-large')
+		
+		# Tide constituents
+		if show_tides:
+			#for (td,td_label) in zip ([M2,MK3,M4,M6],['M2','MK3','M4','M6']):
+			for (td,td_label) in zip ([M2],['M2']):
+				ax3.plot(ks,[td, td],'w--',linewidth=2.5)
+				ax3.text(1/200,td*1.05,td_label,color='w',size='large')
 
-	## Graficamos los modos verticales 1,2,3,4,10 para las ondas internas
-	kh = kiso #np.linspace(1/270.,1/5.)
-	if igw_modes is None:
-		igw_modes = []
-	elif type(igw_modes) is not list:
-		igw_modes = [igw_modes]
-	for mode in igw_modes:
-		igw_n = igw_disp_rel(kh,f,mode,Nbv=Nbv,H=H,log=log)
-		ax3.plot(kh,igw_n,'k:',linewidth=4)
-	w_partition = igw_bm_partition_k(kh,f,M2,Nbv=Nbv,H=H,log=log)
-	ax3.plot(kh,w_partition,'k--',linewidth=4)
-	
-	# Tide constituents
-	#for (td,td_label) in zip ([M2,MK3,M4,M6],['M2','MK3','M4','M6']):
-	for (td,td_label) in zip ([M2],['M2']):
-		ax3.plot(ks,[td, td],'w--',linewidth=2.)
-		ax3.text(1/200,td+.0075,td_label,color='w')
-	# Trying to set ticks in space domain
-	#ax3.set_xlabel('Horizontal Wavenumber k [cpkm]', size=18)  # En numero de onda
-	ax3.set_xlabel('Horizontal scales [km]', size='x-large')  # En km
-	ax3.set_xticks([1./100.,1./50.,1/25.,1/10.])
-	ax3.set_xticklabels(['100','50','25','10'])
-	fig.subplots_adjust(right=0.85)
-	cbar_ax = fig.add_axes([0.87,.11,0.01, 0.5])
-	fig.colorbar(cs, cax=cbar_ax,
-	             label=r'$K$ $\times$ $\omega$ $\times$ $\Psi(k,\omega)$ [units$^{2}$/(cpkm $\times$ cph)]')
+		## Graficamos los modos verticales 1,2,3,4,10 para las ondas internas
+		kh = kiso #np.linspace(1/270.,1/5.)
+		if igw_modes is None:
+			igw_modes = []
+		elif type(igw_modes) is not list:
+			igw_modes = [igw_modes]
+		for mode in igw_modes:
+			igw_n = igw_disp_rel(kh,f,mode,Nbv=Nbv,H=H,log=log)
+			ax3.plot(kh,igw_n,'k:',linewidth=4)
+		w_partition = igw_bm_partition_k(kh,f,M2,Nbv=Nbv,H=H,log=log)
+		ax3.plot(kh,w_partition,'k--',linewidth=4)
 
-	if wk_only:
-		ax3.set_yticks([1./4., 1./12., 1./24., 1./240.])
-		ax3.set_yticklabels(['4 h','12 h','1 d','10 d'], size='large')
-		ax3.set_ylabel('Time scales',size='x-large')
-	else:
-		#### :::::: Frequency spectrum :::::::::::
-		dk = kiso[1]
-		Ef = E[:,:].sum(axis=0)*dk
-		ax2.loglog(Ef,omega,linewidth=3.5)
-		ax2.set_ylim(1/(24.*45.),1/3.)
-		ax2.invert_xaxis()
-		# Trying to set ticks in time domain
-		#ax2.set_ylabel('Frequency [cph]',size=18)
-		ax2.set_yticks([1./4., 1./12., 1./24., 1./240.])
-		ax2.set_yticklabels(['4 h','12 h','1 d','10 d'], size='large')
-		ax2.set_ylabel('Time scales',size='x-large')
+		# Trying to set ticks in space domain
+		#ax3.set_xlabel('Horizontal Wavenumber k [cpkm]', size=18)  # En numero de onda
+		ax3.set_xlabel('Horizontal scales [km]', size='x-large')  # En km
+		ax3.set_xticks([1./100.,1./50.,1/25.,1/10.])
+		ax3.set_xticklabels(['100','50','25','10'], size='large')
+		fig.subplots_adjust(right=0.85)
+		cbar_ax = fig.add_axes([0.87,.11,0.01, 0.5])
+		fig.colorbar(cs, cax=cbar_ax,
+		             label=r'$K$ $\times$ $\omega$ $\times$ $\Psi(k,\omega)$ [units$^{2}$/(cpkm $\times$ cph)]')
+
+		if wk_only:
+			ax3.set_yticks([1./4., 1./12., 1./24., 1./240.])
+			ax3.set_yticklabels(['4 h','12 h','1 d','10 d'], size='medium')
+			ax3.set_ylabel('Time scales',size='x-large')
+		else:
+			#### :::::: Frequency spectrum :::::::::::
+			dk = kiso[1]
+			Ef = E[:,:].sum(axis=0)*dk
+			ax2.loglog(Ef,omega,linewidth=3.5)
+			ax2.set_ylim(1/(24.*45.),1/3.)
+			ax2.invert_xaxis()
+			# Trying to set ticks in time domain
+			#ax2.set_ylabel('Frequency [cph]',size=18)
+			ax2.set_yticks([1./4., 1./12., 1./24., 1./240.])
+			ax2.set_yticklabels(['4 h','12 h','1 d','10 d'], size='large')
+			ax2.set_ylabel('Time scales',size='x-large')
 
 
-		### ::::::: Wavenumber spectrum ::::::::::
-		domg = omega[1]
-		Ewv = E[:,:].sum(axis=1)*domg
-		ax1.loglog(kiso,Ewv,linewidth=3.5)
-		ax1.set_xlim(1/270.,1/10.)
-		ax1.set_xticklabels(["",""])
-		ax1a=ax1.twiny()
-		ax1a.set_yscale('log')
-		ax1a.set_xscale('log')
-		ax1a.set_xlabel("Wavelength [km]",size='x-large')
-		ax1a.set_xlim(1/270.,1/10.)
-		ax1a.set_xticks([1./100.,1./50.,1/10.])
-		ax1a.set_xticklabels(['100','50','10'])
+			### ::::::: Wavenumber spectrum ::::::::::
+			domg = omega[1]
+			Ewv = E[:,:].sum(axis=1)*domg
+			ax1.loglog(kiso,Ewv,linewidth=3.5)
+			ax1.set_xlim(1/270.,1/10.)
+			ax1.set_xticklabels(["",""])
+			ax1a=ax1.twiny()
+			ax1a.set_yscale('log')
+			ax1a.set_xscale('log')
+			ax1a.set_xlabel("Wavelength [km]",size='x-large')
+			ax1a.set_xlim(1/270.,1/10.)
+			ax1a.set_xticks([1./100.,1./50.,1/10.])
+			ax1a.set_xticklabels(['100','50','10'])
 
-	plt.show()
+		plt.show()
 
 def calc_bm_igw_k(kh,omega,E,lat,Nbv=0.8594,H=4,log=True):
 	f = coriolis(lat)
@@ -224,7 +236,7 @@ def get_clim(var):
 
 	return clim
 
-def plot_wk_forvar(fname,var,plot_igw_bm=False,Nbv=0.8594,H=4,wk_only=False,log=True,igw_modes=None):
+def plot_wk_forvar(fname,var,plot_igw_bm=False,Nbv=0.8594,H=4,wk_only=False,show_coriolis=True,show_tides=True,igw_modes=None,log=True):
 	#:::::::::::::::: Plot ::::::::::::::::
 	clim = get_clim(var)
 	kiso,omega,E = open_ds_kwe(fname,log)
@@ -233,11 +245,11 @@ def plot_wk_forvar(fname,var,plot_igw_bm=False,Nbv=0.8594,H=4,wk_only=False,log=
 	lat,lon,id = get_latlonid(fname)
 	if log:
 		print("Lat = {}".format(lat))
-	plot_wk_integrated(kiso,omega,E,lat,clim,Nbv=Nbv,H=H,wk_only=wk_only,log=log,igw_modes=igw_modes)
+	plot_wk_integrated(kiso,omega,E,lat,clim,Nbv=Nbv,H=H,wk_only=wk_only,show_coriolis=show_coriolis,show_tides=show_tides,igw_modes=igw_modes,log=log)
 	if plot_igw_bm:
 		plot_bm_igw_k(kiso,omega,E,lat,Nbv=Nbv,H=H,log=log)
 
-def plot_wk_forseasonvarid(prnt_folder,season,var,id,Nbv=0.8594,H=4,wk_only=False,log=True):
+def plot_wk_forseasonvarid(prnt_folder,season,var,id,Nbv=0.8594,H=4,wk_only=False,show_coriolis=True,show_tides=True,igw_modes=None,log=True):
 	with open("{}/spectra/db/all_{}_{}.json".format(prnt_folder,season,var),'r') as f:
 		data = json.load(f)
 	s_id = str(id)
@@ -245,7 +257,7 @@ def plot_wk_forseasonvarid(prnt_folder,season,var,id,Nbv=0.8594,H=4,wk_only=Fals
 	#lon = data[s_id]['lon']
 	fname_ = data[s_id]['fname']
 	fname = "{}/spectra/{}/{}/{}".format(prnt_folder,season,var,fname_)
-	plot_wk_forvar(fname,var,Nbv=Nbv,H=H,wk_only=wk_only,log=log)
+	plot_wk_forvar(fname,var,Nbv=Nbv,H=H,wk_only=wk_only,show_coriolis=show_coriolis,show_tides=show_tides,igw_modes=igw_modes,log=log)
 
 
 def find_closest_idx(np_arr,val):

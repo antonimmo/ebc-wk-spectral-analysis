@@ -12,9 +12,10 @@ from netCDF4 import Dataset
 from xmitgcm import llcreader,open_mdsdataset
 from scipy.interpolate import interp2d
 # Imports within the same package
+from .output import ds_path_fmt,LUIGI_OUT_FOLDER
 from ..common_vars.time_slices import max_iter,idx_t
 from ..common_vars.regions import faces_regions
-from ..common_vars.directories import MODEL_FOLDER,DATA_FOLDER,LUIGI_OUT_FOLDER
+from ..common_vars.directories import MODEL_FOLDER,DATA_FOLDER
 
 logging.basicConfig(
     format="%(asctime)s %(levelname)-8s %(message)s",
@@ -24,10 +25,7 @@ logging.basicConfig(
 # Directorio de los datos geográficos
 prnt_map = "{}/map_data".format(DATA_FOLDER)
 # Directorios de entrada
-grid_path = "{}/LLC2160/grid/".format(MODEL_FOLDER)
-# Directorios de salida
-ds_path_fmt = LUIGI_OUT_FOLDER + "/Datasets_compressed/{}/{}"
-filtered_path_fmt = LUIGI_OUT_FOLDER + "/Rob_k_filtered/{}/{}"
+grid_path = "{}/LLC4320/grid/".format(MODEL_FOLDER)
 
 #min_i,min_j = 576,864	## Esquina inferior izquierda
 #max_i,max_j = 865,1155	## Esquina superior derecha
@@ -37,11 +35,10 @@ filtered_path_fmt = LUIGI_OUT_FOLDER + "/Rob_k_filtered/{}/{}"
 #max_i,max_j = 865,578	## Esquina superior derecha
 
 Omega = 2*np.pi/(24*3600) # Frecuencia de rotación terrestre
-vars_wf = ["U","V"] # Variables del modelo
-k_lvl_idx = [0, 36]  ## z=0 m, z=-400 m (39 para z=-500 m)
-k_lvl_suffixes = ["0","H"]
-#k_lvl_idx = [0]
-#k_lvl_suffixes = ["0"]
+#vars_wf = ["U","V"] # Variables del modelo
+vars_wf = ["Theta"]
+#k_lvl_idx = [0, 36]  ## z=0 m, z=-400 m (39 para z=-500 m)
+k_lvl_idx = [0,6,12,16,19]#,21,25
 
 ## For test purposes only
 area_latlonbox = {
@@ -55,16 +52,16 @@ class GridMdsBase():
 	#min_i,min_j,max_i,max_j = (None,)*4
 	retry_count = 3
 
-	def interpmat_48(self,grid_mat):
-	    # Old
-	    nrow,ncol = grid_mat.shape
-	    rows = np.arange(nrow)
-	    cols = np.arange(ncol)
-	    interp = interp2d(cols,rows,grid_mat,kind="cubic")
-	    # New 
-	    new_r = np.arange(nrow*2)/2
-	    new_c = np.arange(ncol*2)/2
-	    return interp(new_c,new_r)
+	# def interpmat_48(self,grid_mat):
+	#     # Old
+	#     nrow,ncol = grid_mat.shape
+	#     rows = np.arange(nrow)
+	#     cols = np.arange(ncol)
+	#     interp = interp2d(cols,rows,grid_mat,kind="cubic")
+	#     # New 
+	#     new_r = np.arange(nrow*2)/2
+	#     new_c = np.arange(ncol*2)/2
+	#     return interp(new_c,new_r)
 
 	def get_grid_ds(self):
 		if self.grid_ds is None:
@@ -72,45 +69,100 @@ class GridMdsBase():
 			self.grid_ds = open_mdsdataset(grid_path, read_grid=True, iters=None, default_dtype=np.float32, geometry="llc").isel(face=self.area_face)
 		return self.grid_ds
 
-	def get_dxdy24(self):
+	# def get_grid24(self):
+	# 	grid_ds = self.get_grid_ds()
+	# 	logging.info("Fetching grid DXg")
+	# 	DXg_24 = grid_ds.dxG.values
+	# 	logging.info("Fetching grid DXc")
+	# 	DXc_24 = grid_ds.dxC.values
+	# 	logging.info("Fetching grid DYg")
+	# 	DYg_24 = grid_ds.dyG.values
+	# 	logging.info("Fetching grid DYc")
+	# 	DYc_24 = grid_ds.dyC.values
+	# 	logging.info("Fetching grid rAz")
+	# 	rAz_24 = grid_ds.rAz.values
+	# 	logging.info("Fetching grid rAc")
+	# 	rAc_24 = grid_ds.rA.values
+	# 	if self.area_face<=6:
+	# 		logging.info("Returning non-rotated version")
+	# 		return DXg_24,DYg_24,rAz_24,DXc_24,DYc_24,rAc_24
+	# 	else:
+	# 		logging.info("Returning rotated version")
+	# 		return np.rot90(DXg_24),np.rot90(DYg_24),np.rot90(rAz_24),np.rot90(DXc_24),np.rot90(DYc_24),np.rot90(rAc_24)
+
+	# def get_grid48_interp(self):
+	# 	DXg_24,DYg_24,rAz_24,DXc_24,DYc_24,rAc_24 = self.get_grid24()
+	# 	logging.info("Interpolating grid")
+	# 	DXg_48 = self.interpmat_48(DXg_24/2)
+	# 	DXc_48 = self.interpmat_48(DXc_24/2)
+	# 	DYg_48 = self.interpmat_48(DYg_24/2)
+	# 	DYc_48 = self.interpmat_48(DYc_24/2)
+	# 	# Si DX,DY disminuyen en un factor de 2, el área (Az,Ac) lo hace un en un factor de 4
+	# 	rAz_48 = self.interpmat_48(rAz_24/4)
+	# 	rAc_48 = self.interpmat_48(rAc_24/4)
+	# 	return DXg_48,DYg_48,rAz_48,DXc_48,DYc_48,rAc_48
+
+	# def get_lonlat24(self):
+	# 	grid_ds = self.get_grid_ds()
+	# 	logging.info("Fetching grid lon")
+	# 	LON_24 = grid_ds.XG.values
+	# 	logging.info("Fetching grid lat")
+	# 	LAT_24 = grid_ds.YG.values
+	# 	if self.area_face<=6:
+	# 		logging.info("Returning non-rotated version")
+	# 		return LON_24,LAT_24
+	# 	else:
+	# 		logging.info("Returning rotated version")
+	# 		return np.rot90(LON_24),np.rot90(LAT_24)
+
+	# def get_lonlat48_interp(self):
+	# 	LON_24,LAT_24 = self.get_lonlat24()
+	# 	logging.info("Interpolating grid")
+	# 	LON_48 = self.interpmat_48(LON_24)
+	# 	LAT_48 = self.interpmat_48(LAT_24)
+	# 	return LON_48,LAT_48
+
+
+	def get_grid48(self):
 		grid_ds = self.get_grid_ds()
-		logging.info("Fetching grid dx")
-		DX_24 = grid_ds.dxG.values
-		logging.info("Fetching grid dy")
-		DY_24 = grid_ds.dyG.values
+		logging.info("Fetching grid DX_g")
+		DXg = grid_ds.dxG.values
+		logging.info("Fetching grid DX_c")
+		DXc = grid_ds.dxC.values
+		logging.info("Fetching grid DY_g")
+		DYg = grid_ds.dyG.values
+		logging.info("Fetching grid DY_c")
+		DYc = grid_ds.dyC.values
+		logging.info("Fetching grid rA_z")
+		rAz = grid_ds.rAz.values
+		logging.info("Fetching grid rA_c")
+		rAc = grid_ds.rA.values
+
 		if self.area_face<=6:
 			logging.info("Returning non-rotated version")
-			return DX_24,DY_24
+			return DXg,DYg,rAz,DXc,DYc,rAc
 		else:
 			logging.info("Returning rotated version")
-			return np.rot90(DX_24),np.rot90(DY_24)
+			return np.rot90(DXg),np.rot90(DYg),np.rot90(rAz),np.rot90(DXc),np.rot90(DYc),np.rot90(rAc)
 
-	def get_dxdy48(self):
-		DX_24,DY_24 = self.get_dxdy24()
-		logging.info("Interpolating grid")
-		DX_48 = self.interpmat_48(DX_24/2)
-		DY_48 = self.interpmat_48(DY_24/2)
-		return DX_48,DY_48
-
-	def get_lonlat24(self):
-		grid_ds = self.get_grid_ds()
-		logging.info("Fetching grid lon")
-		LON_24 = grid_ds.XG.values
-		logging.info("Fetching grid lat")
-		LAT_24 = grid_ds.YG.values
-		if self.area_face<=6:
-			logging.info("Returning non-rotated version")
-			return LON_24,LAT_24
-		else:
-			logging.info("Returning rotated version")
-			return np.rot90(LON_24),np.rot90(LAT_24)
 
 	def get_lonlat48(self):
-		LON_24,LAT_24 = self.get_lonlat24()
-		logging.info("Interpolating grid")
-		LON_48 = self.interpmat_48(LON_24)
-		LAT_48 = self.interpmat_48(LAT_24)
-		return LON_48,LAT_48
+		grid_ds = self.get_grid_ds()
+		logging.info("Fetching grid lon_g")
+		LONg = grid_ds.XG.values
+		logging.info("Fetching grid lat_g")
+		LATg = grid_ds.YG.values
+		logging.info("Fetching grid lon_c")
+		LONc = grid_ds.XC.values
+		logging.info("Fetching grid lat_c")
+		LATc = grid_ds.YC.values
+
+		if self.area_face<=6:
+			logging.info("Returning non-rotated version")
+			return LONg,LATg,LONc,LATc
+		else:
+			logging.info("Returning rotated version")
+			return np.rot90(LONg),np.rot90(LATg),np.rot90(LONc),np.rot90(LATc)
 
 	def read_indexes(self,area_id):
 		logging.info("Reading indexes for area {}".format(area_id))
@@ -148,11 +200,11 @@ class SliceArea(Task,GridMdsBase):
 			logging.info("Area {} box bounds (from custom obj) {},{},{},{}:".format(self.area_id,lon_min,lat_min,lon_max,lat_max))
 		
 		#
-		LON_48,LAT_48 = self.get_lonlat48()
+		LONg,LATg,LONc,LATc = self.get_lonlat48()
 		# Esquina inferior izquierda
-		min_i,min_j = self.find_ij_4lonlat(lon_min,lat_min,LON_48,LAT_48)
+		min_i,min_j = self.find_ij_4lonlat(lon_min,lat_min,LONg,LATg)
 		# Esquina superior derecha
-		max_i,max_j = self.find_ij_4lonlat(lon_max,lat_max,LON_48,LAT_48)
+		max_i,max_j = self.find_ij_4lonlat(lon_max,lat_max,LONg,LATg)
 		max_i = max_i+1
 		max_j = max_j+1
 		with self.output().open('w') as out:
@@ -184,37 +236,60 @@ class GetGrid(Task,GridMdsBase):
 
 	def get_dxdy(self,min_j,max_j,min_i,max_i):
 		logging.info("Getting dx,dy")
-		DX_48,DY_48 = self.get_dxdy48()
-		DX_48 = DX_48[min_j:max_j,min_i:max_i]
-		DY_48 = DY_48[min_j:max_j,min_i:max_i]
-		logging.info("Saving dx,dy")
-		fname_dx = "{}/dx.txt".format(ds_path_fmt.format(self.area_id,self.time_prefix))
-		np.savetxt(fname_dx,DX_48,fmt='%s')
-		fname_dy = "{}/dy.txt".format(ds_path_fmt.format(self.area_id,self.time_prefix))
-		np.savetxt(fname_dy,DY_48,fmt='%s')
+		DXg,DYg,rAz,DXc,DYc,rAc = self.get_grid48()
+		DXg = DXg[min_j:max_j,min_i:max_i]
+		DYg = DYg[min_j:max_j,min_i:max_i]
+		rAz = rAz[min_j:max_j,min_i:max_i]
+		DXc = DXc[min_j:max_j,min_i:max_i]
+		DYc = DYc[min_j:max_j,min_i:max_i]
+		rAc = rAc[min_j:max_j,min_i:max_i]
+
+		logging.info("Saving dx,dy,rA")
+		fname_ = "{}/dxg.txt".format(ds_path_fmt.format(self.area_id,self.time_prefix))
+		np.savetxt(fname_,DXg,fmt='%s')
+		fname_ = "{}/dyg.txt".format(ds_path_fmt.format(self.area_id,self.time_prefix))
+		np.savetxt(fname_,DYg,fmt='%s')
+		fname_ = "{}/rAz.txt".format(ds_path_fmt.format(self.area_id,self.time_prefix))
+		np.savetxt(fname_,rAz,fmt='%s')
+		fname_ = "{}/dxc.txt".format(ds_path_fmt.format(self.area_id,self.time_prefix))
+		np.savetxt(fname_,DXc,fmt='%s')
+		fname_ = "{}/dyc.txt".format(ds_path_fmt.format(self.area_id,self.time_prefix))
+		np.savetxt(fname_,DYc,fmt='%s')
+		fname_ = "{}/rAc.txt".format(ds_path_fmt.format(self.area_id,self.time_prefix))
+		np.savetxt(fname_,rAc,fmt='%s')
 
 	def get_lonlatf(self,min_j,max_j,min_i,max_i):
 		logging.info("Getting lon,lat,f")
-		LON_48,LAT_48 = self.get_lonlat48()
-		logging.info("Lower left corner {},{}".format(LON_48[min_j,min_i],LAT_48[min_j,min_i]))
-		logging.info("Upper right corner {},{}".format(LON_48[max_j,max_i],LAT_48[max_j,max_i]))
-		LON_48 = LON_48[min_j:max_j,min_i:max_i]
-		LAT_48 = LAT_48[min_j:max_j,min_i:max_i]
-		sin_lat = np.sin(LAT_48*np.pi/180)
+		LONg,LATg,LONc,LATc = self.get_lonlat48()
+		# Las coordenadas originales (de lonlat_box) deberían ser más parecidas a las (g) -- Ver SliceArea.get_indexes()
+		logging.info("Lower left corner (g) {},{}".format(LONg[min_j,min_i],LATg[min_j,min_i]))
+		logging.info("Upper right corner  (g) {},{}".format(LONg[max_j,max_i],LATg[max_j,max_i]))
+		logging.info("Lower left corner (g) {},{}".format(LONc[min_j,min_i],LATc[min_j,min_i]))
+		logging.info("Upper right corner  (g) {},{}".format(LONc[max_j,max_i],LATc[max_j,max_i]))
+		LONg = LONg[min_j:max_j,min_i:max_i]
+		LATg = LATg[min_j:max_j,min_i:max_i]
+		LONc = LONc[min_j:max_j,min_i:max_i]
+		LATc = LATc[min_j:max_j,min_i:max_i]
+		sin_lat = np.sin(LATc*np.pi/180)
 		FCOR_48 = 2*Omega*sin_lat
 
 		logging.info("Saving lon,lat,f")
-		fname_lon = "{}/lon.txt".format(ds_path_fmt.format(self.area_id,self.time_prefix))
-		np.savetxt(fname_lon,LON_48,fmt='%s')
-		fname_lat = "{}/lat.txt".format(ds_path_fmt.format(self.area_id,self.time_prefix))
-		np.savetxt(fname_lat,LAT_48,fmt='%s')
-		fname_lat = "{}/f.txt".format(ds_path_fmt.format(self.area_id,self.time_prefix))
-		np.savetxt(fname_lat,FCOR_48,fmt='%s')
+		fname_ = "{}/lon_g.txt".format(ds_path_fmt.format(self.area_id,self.time_prefix))
+		np.savetxt(fname_,LONg,fmt='%s')
+		fname_ = "{}/lat_g.txt".format(ds_path_fmt.format(self.area_id,self.time_prefix))
+		np.savetxt(fname_,LATg,fmt='%s')
+		fname_ = "{}/lon_c.txt".format(ds_path_fmt.format(self.area_id,self.time_prefix))
+		np.savetxt(fname_,LONc,fmt='%s')
+		fname_ = "{}/lat_c.txt".format(ds_path_fmt.format(self.area_id,self.time_prefix))
+		np.savetxt(fname_,LATc,fmt='%s')
+		fname_f = "{}/f.txt".format(ds_path_fmt.format(self.area_id,self.time_prefix))
+		np.savetxt(fname_f,FCOR_48,fmt='%s')
 		
 
 	def output(self):
 		if self._target is None:
-			self._target = [LocalTarget("{}/{}.txt".format(ds_path_fmt.format(self.area_id,self.time_prefix),var_)) for var_ in ["dx","dy","lon","lat","f"]]
+			self._target = [LocalTarget("{}/{}.txt".format(ds_path_fmt.format(self.area_id,self.time_prefix),var_)) \
+			 for var_ in ["dxg","dyg","rAz","lon_g","lat_g","dxc","dyc","rAc","lon_c","lat_c","f"]]
 			self._target[0].makedirs()
 		return self._target
 
@@ -223,14 +298,14 @@ class GetGrid(Task,GridMdsBase):
 		self.get_dxdy(min_j,max_j,min_i,max_i)
 		self.get_lonlatf(min_j,max_j,min_i,max_i)
 
-class GetVelocities(Task,GridMdsBase):
+class GetVariables(Task,GridMdsBase):
 	#area_id = IntParameter()
 	#area_face = IntParameter()
 	t = IntParameter()
 	t_ds = None
 	_target = None
 	ds_area = None
-	uv_vals = None
+	values = None
 
 	def requires(self):
 		for area_id in faces_regions[self.area_face]:
@@ -242,333 +317,62 @@ class GetVelocities(Task,GridMdsBase):
 			model = llcreader.ECCOPortalLLC4320Model()
 			model.iter_stop = max_iter
 			hourly_step = 24 if (self.time_prefix=="days") else 1
-			logging.info("Class GetVelocities - reading variables ({}) Dataset (face={},t={},t_ds={})".format(vars_wf,self.area_face,self.t,self.t_ds))				# 144 iters = 1 hr, so 144*24 = 1 day
+			logging.info("Class GetVariables - reading variables ({}) Dataset (face={},t={},t_ds={})".format(vars_wf,self.area_face,self.t,self.t_ds))				# 144 iters = 1 hr, so 144*24 = 1 day
 			self.ds_area = model.get_dataset(
-				varnames=vars_wf,k_chunksize=len(k_lvl_idx),type="faces",iter_step=144*hourly_step
+				varnames=vars_wf,k_chunksize=1,type="faces",iter_step=144*hourly_step
 				).isel(time=self.t,face=self.area_face,k=k_lvl_idx)
 			self.t_ds = self.ds_area.time.values
 		return self.ds_area
 
-	def clear_uv_vals(self):
-		self.uv_vals = None
+	def clear_values(self):
+		self.values = None
 
-	def get_uv_vals_4_var_k(self,model_var,k_idx):
+	def get_values_4_var_k(self,model_var,k_idx,k_lvl):
 		# Solo si no se ha leido antes
-		# Se da por hecho que después de iterar en las areas de cada cara, se corre self.clear_uv_vals()
-		if self.uv_vals is None:
-			logging.info("Class GetVelocities - reading {}{} (face={},t={})".format(model_var,k_lvl_suffixes[k_idx],self.area_face,self.t))
+		# Se da por hecho que después de iterar en las areas de cada cara, se corre self.clear_values()
+		if self.values is None:
+			logging.info("Class GetVariables - reading {}{:02d} (face={},t={})".format(model_var,k_lvl,self.area_face,self.t))
 			ds_area_t_z = self.get_ds_area().isel(k=k_idx)
-			self.uv_vals = ds_area_t_z[model_var].values
+			self.values = ds_area_t_z[model_var].values
 			# Corregimos para los recuadros del 7 en adelante
 			if self.area_face>6:
 				logging.info("We need to rotate this matrix as face={}>6".format(self.area_face))
-				self.uv_vals = np.rot90(self.uv_vals)
+				self.values = np.rot90(self.values)
 
-	def save_uv_area(self,area_id,model_var,k_idx,k_suffix,min_j,max_j,min_i,max_i):
-		fname_uv = "{}/{}{}_{:05d}.npz".format(ds_path_fmt.format(area_id,self.time_prefix),model_var,k_suffix,self.t)
+	def save_uv_area(self,area_id,model_var,k_idx,k_lvl,min_j,max_j,min_i,max_i):
+		fname_uv = "{}/{}{:02d}_{:05d}.npz".format(ds_path_fmt.format(area_id,self.time_prefix),model_var,k_lvl,self.t)
 		if os.path.exists(fname_uv) and os.path.getsize(fname_uv)>0:
 			logging.info("Already exists. Skipping -- {}".format(fname_uv))
 		else:
 			# Leemos toda la cara
-			self.get_uv_vals_4_var_k(model_var,k_idx)
+			self.get_values_4_var_k(model_var,k_idx,k_lvl)
 			# Tomamos los datos al area correspondiente
-			logging.info("Trimming {}{} data (face={},area_id={},t={},t_ds={}), i=({},{}), j=({},{})".format(model_var,k_suffix,self.area_face,area_id,self.t,self.t_ds,min_i,max_i,min_j,max_j))
-			uv_vals_trimmed = self.uv_vals[min_j:max_j,min_i:max_i]	
-			#np.savetxt(fname_uv,uv_vals_trimmed,fmt='%s')
-			np.savez_compressed(fname_uv,uv=uv_vals_trimmed,t_ds=self.t_ds)
+			logging.info("Trimming {}{:02d} data (face={},area_id={},t={},t_ds={}), i=({},{}), j=({},{})".format(model_var,k_lvl,self.area_face,area_id,self.t,self.t_ds,min_i,max_i,min_j,max_j))
+			values_trimmed = self.values[min_j:max_j,min_i:max_i]	
+			#np.savetxt(fname_uv,values_trimmed,fmt='%s')
+			np.savez_compressed(fname_uv,uv=values_trimmed,t_ds=self.t_ds)
+			logging.info("Saved: {}".format(fname_uv))
 
 	def output(self):
 		if self._target is None:
 			self._target = [
-				LocalTarget("{}/{}{}_{:05d}.npz".format(ds_path_fmt.format(area_id,self.time_prefix),var_,z_,self.t)) 
-				for var_ in vars_wf for z_ in k_lvl_suffixes for area_id in faces_regions[self.area_face]
+				LocalTarget("{}/{}{:02d}_{:05d}.npz".format(ds_path_fmt.format(area_id,self.time_prefix),var_,z_,self.t)) 
+				for var_ in vars_wf for z_ in k_lvl_idx for area_id in faces_regions[self.area_face]
 			]
 			self._target[0].makedirs()
 		return self._target
 
 	def run(self):
 		for var_name in vars_wf:
-			for k_idx,k_suffix in enumerate(k_lvl_suffixes):
+			for k_idx,k_lvl in enumerate(k_lvl_idx):
 				for area_id in faces_regions[self.area_face]:
 					logging.info("Loading indexes for area {} (face={},t={})".format(area_id,self.area_face,self.t))
 					min_i,min_j,max_i,max_j = self.read_indexes(area_id)
-					self.save_uv_area(area_id,var_name,k_idx,k_suffix,min_j,max_j,min_i,max_i)
+					self.save_uv_area(area_id,var_name,k_idx,k_lvl,min_j,max_j,min_i,max_i)
 				# Se tiene que limpiar los datos de la cara que se leyó, 
-				# ya que save_uv_area() invoca get_uv_vals_4_var_k(),
-				# el cual verifica que self.uv_vals sea None, de lo contrario no carga la cara siguiente
-				self.clear_uv_vals()
-
-class CreateNetCDF(Task,GridMdsBase):
-	area_id = IntParameter()
-	t = IntParameter()
-	Lt_km = FloatParameter()
-
-	lon = None
-	lat = None
-	dx = None
-	dy = None
-	f_cor = None
-	Kx = None
-	Ky = None
-	filter_mask = None
-	_target = None
-	# Velocities (read and filtered)
-	u0,v0 = None,None
-	u0_lo,u0_hi,v0_lo,v0_hi = (None,)*4
-	uH_lo,uH_hi,vH_lo,vH_hi = (None,)*4
-	# RV
-	RV_0,RV_H = None,None
-	rv0_hi,rv0_lo,rvH_hi,rvH_lo = (None,)*4
-	# OW
-	OW_0,OW_H = None,None
-	ow0_hi,ow0_lo,owH_hi,owH_lo = (None,)*4
-	# Ro_b
-	Ro_b,Rob_lo,Rob_hi = (None,)*3
-
-	def init(self):
-		if (self.dx is None) or (self.dy is None):
-			name_dx = "{}/dx.txt".format(ds_path_fmt.format(self.area_id,self.time_prefix))
-			self.dx = np.loadtxt(name_dx)
-			name_dy = "{}/dy.txt".format(ds_path_fmt.format(self.area_id,self.time_prefix))
-			self.dy = np.loadtxt(name_dy)
-		if (self.f_cor is None) or (self.lat is None):
-			# f_cor
-			fname_f = "{}/f.txt".format(ds_path_fmt.format(self.area_id,self.time_prefix))
-			self.f_cor = np.loadtxt(fname_f)
-			fname_lat = "{}/lat.txt".format(ds_path_fmt.format(self.area_id,self.time_prefix))
-			self.lat = np.loadtxt(fname_lat)
-			
-		if (self.Kx is None) or (self.Ky is None):
-			# Kx,Ky
-			fname_lon = "{}/lon.txt".format(ds_path_fmt.format(self.area_id,self.time_prefix))
-			self.lon = np.loadtxt(fname_lon)
-			#logging.info("lon shape".format(self.lon.shape))
-			Ny = self.lon.shape[0]
-			Nx = self.lon.shape[1]
-			Lx = Nx*np.mean(self.dx)
-			Ly = Ny*np.mean(self.dy)
-			delta_kx = 1/Lx
-			delta_ky = 1/Ly
-			N_kx = (Nx-1)/2
-			N_ky = (Ny-1)/2
-			self.Kx = delta_kx*np.arange(-N_kx,N_kx+1)
-			self.Ky = delta_ky*np.arange(-N_ky,N_ky+1)
-
-	def requires(self):
-		return [GetGrid(area_id=self.area_id,time_prefix=self.time_prefix,area_face=self.area_face), GetVelocities(area_id=self.area_id,t=self.t,time_prefix=self.time_prefix,area_face=self.area_face)]
-
-	def create_filter_k(order=0,flip=False): #Orden 0 es el filtro ideal, de 1 de adelante es el Butterworth
-		# self.Kx y self.Ky están en metros, porque dx y dy lo están, así que Lt también debe estar en metros
-		Lt_m = self.Lt_km*1000
-		K_max_sq = (1/Lt)**2
-		kx_,ky_ = np.meshgrid(self.Kx,self.Ky)
-
-		if order==0: 	## "Ideal" filter
-			filter_mask_plt = (np.square(kx_)+np.square(ky_) <= K_max_sq).astype(np.float32)
-		else:			## Butterworth filter: http://fourier.eng.hmc.edu/e101/lectures/Fourier_Analysis/node10.html
-			filter_mask_plt = 1/( 1 + ( (np.square(kx_)+np.square(ky_))/K_max_sq )**order )
-
-		self.filter_mask = np.fft.fftshift(filter_mask_plt)
-
-		if flip:
-			self.filter_mask = self.filter_mask*np.fliplr(filter_mask) # Simetria en Kx
-			self.filter_mask = self.filter_mask*np.flipud(filter_mask) # Simetria en Ky
-
-	def filter_fft(self,var_xy):
-		# FFT
-		var_k = np.fft.fft2(var_xy)
-
-		# Pasa bajas
-		var_k_lo = var_k*self.filter_mask
-		_var_lo = np.fft.ifft2(var_k_lo)
-		var_lo = np.real(_var_lo)	# Eliminamos la parte imaginaria, ya que es espuria
-
-		# Pasa altas lo tomaremos solamente como la diferencia entre el campo total (original) y el pasa bajas
-		var_hi = var_xy-var_lo
-
-		return var_lo,var_hi
-
-	def filter_uv(self):
-		logging.info("Partitioning spacial scales bigger and smaller than {:.2f} km".format(self.Lt_km))
-		self.create_filter_k(order=100)
-		## Z=0
-		# Reading
-		logging.info("U0")
-		self.u0 = np.loadtxt("{}/U0_{:05d}.txt".format(ds_path_fmt.format(self.area_id,self.time_prefix),self.t))
-		logging.info("V0")
-		self.v0 = np.loadtxt("{}/V0_{:05d}.txt".format(ds_path_fmt.format(self.area_id,self.time_prefix),self.t))
-		# Filtering
-		logging.info ("Filter 0")
-		self.u0_lo,self.u0_hi = self.filter_fft(self.u0)
-		self.v0_lo,self.v0_hi = self.filter_fft(self.v0)
-
-		## Z=H
-		# Reading
-		logging.info("UH")
-		self.uH = np.loadtxt("{}/UH_{:05d}.txt".format(ds_path_fmt.format(self.area_id,self.time_prefix),self.t))
-		logging.info("VH")
-		self.vH = np.loadtxt("{}/VH_{:05d}.txt".format(ds_path_fmt.format(self.area_id,self.time_prefix),self.t))
-		# Filtering
-		logging.info("Filter H")
-		self.uH_lo,self.uH_hi = self.filter_fft(self.uH)
-		self.vH_lo,self.vH_hi = self.filter_fft(self.vH)
-
-	def d_dx(self,f):
-		return (np.gradient(f,axis=1,edge_order=2)/self.dx)
-
-	def d_dy(self,f):
-		return (np.gradient(f,axis=0,edge_order=2)/self.dy)
-
-	def sn(self,u,v):
-		return self.d_dx(u) - self.d_dy(v)
-
-	def ss(self,u,v):
-		return self.d_dx(v) + self.d_dy(u)
-
-	def ow(self,u,v,rv):
-		return np.square(self.sn(u,v)) + np.square(self.ss(u,v)) - np.square(rv)
-
-	def rv(self,u,v):
-		return self.d_dx(v) - self.d_dy(u)
-
-	def rob_rv_st(self):
-		## Z=0
-		logging.info("RV-OW_0")
-		self.RV_0 = self.rv(self.u0,self.v0)
-		self.OW_0 = self.ow(self.u0,self.v0,self.RV_0)
-		logging.info("RV-OW_0 Lo")
-		self.rv0_lo = self.rv(self.u0_lo,self.v0_lo)
-		self.ow0_lo = self.ow(self.u0_lo,self.v0_lo,self.rv0_lo)
-		logging.info("RV-OW_0 Hi")
-		self.rv0_hi = self.rv(self.u0_hi,self.v0_hi)
-		self.ow0_hi = self.ow(self.u0_hi,self.v0_hi,self.rv0_hi)
-		#  z=H
-		logging.info("RV-OW_H")
-		self.RV_H = self.rv(self.uH,self.vH)
-		self.OW_H = self.ow(self.uH,self.vH,self.RV_H)
-		logging.info("RV-OW_H Lo")
-		self.rvH_lo = self.rv(self.uH_lo,self.vH_lo)
-		self.owH_lo = self.ow(self.uH_lo,self.vH_lo,self.rvH_lo)
-		logging.info("RV-OW_H Hi")
-		self.rvH_hi = self.rv(self.uH_hi,self.vH_hi)
-		self.owH_hi = self.ow(self.uH_hi,self.vH_hi,self.rvH_hi)
-
-		logging.info("Ro_b")
-		# ... y finalmente el Número de Rossby baroclínico (Ro_b)
-		# ** Nota: No calculamos el valor absoluto para poder calcular promedios temporales,
-		# 			en cuyo caso se toma abs() al promedio temporal
-		self.Ro_b = (self.RV_0-self.RV_H)/self.f_cor
-		self.Rob_lo = (self.rv0_lo-self.rvH_lo)/self.f_cor
-		self.Rob_hi = (self.rv0_hi-self.rvH_hi)/self.f_cor
-
-	def to_netcdf(self):
-		fn_out = self.output().path
-		logging.info("Saving to NetCDF: {}".format(fn_out))
-		nc = Dataset(fn_out,'w',"NETCDF3")
-		## Dims
-		nlon,nlat=self.lon.shape
-		nc.createDimension('nlon',nlon)
-		nc.createDimension('nlat',nlat)
-		nc.createDimension('k',2)
-		nc.createDimension('time',None)   # Solo ponemos un tiempo
-		## Coordenadas
-		nlon_v = nc.createVariable('nlon','i4',('nlon'))
-		nlon_v[:] = np.arange(nlon)
-		nlat_v = nc.createVariable('nlat','i4',('nlat'))
-		nlat_v[:] = np.arange(nlat)
-		k_v = nc.createVariable('k','i4',('k'))
-		k_v[:] = np.arange(2)
-		## Atributos 
-		# Lt en km
-		nc.setncatts({'Lt_km':self.Lt_km})
-		## Variables
-		# Time
-		time_v = nc.createVariable('time','i4',('time'))
-		time_v.setncattr('units','{} since 2011-09-13T00:00:00'.format(self.time_prefix.title()))
-		time_v[0] = self.t
-		# Grid
-		lon_v = nc.createVariable('lon','f4',('nlon','nlat'))
-		lon_v.setncattr('units','degrees')
-		lon_v[:,:] = self.lon
-		lat_v = nc.createVariable('lat','f4',('nlon','nlat'))
-		lat_v.setncattr('units','degrees')
-		lat_v[:,:] = self.lat
-		z_v = nc.createVariable('z','f4',('k'))
-		z_v.setncatts({'units':'m','description':'Depth'})
-		z_v[:] = [0,400]
-		# Dx,dy
-		dx_v = nc.createVariable('dx','f4',('nlon','nlat'))
-		dx_v.setncatts({'units':'m','description':'dx per grid element'})
-		dx_v[:,:] = self.dx
-		dy_v = nc.createVariable('dy','f4',('nlon','nlat'))
-		dy_v.setncatts({'units':'m','description':'dy per grid element'})
-		dy_v[:,:] = self.dy
-		# Coriolis
-		fcor_v = nc.createVariable('f_coriolis','f4',('nlon','nlat'))
-		fcor_v.setncatts({'units':'s^-1','description':'Coriolis parameter f'})
-		fcor_v[:,:] = self.f_cor
-		# Relative vorticity
-		RV_v = nc.createVariable('RV','f4',('time','k','nlon','nlat'))
-		RV_v.setncatts({'units':'s^-1','description':"Relative vorticity for all wavelenghts"})
-		RV_v[0,0,:,:] = self.RV_0
-		RV_v[0,1,:,:] = self.RV_H
-		RV_lo_v = nc.createVariable('RV_Lo','f4',('time','k','nlon','nlat'))
-		RV_lo_v.setncatts({'units':'s^-1','description':"Relative vorticity for wavelenghts > {:.1f} km".format(self.Lt_km)})
-		RV_lo_v[0,0,:,:] = self.rv0_lo
-		RV_lo_v[0,1,:,:] = self.rvH_lo
-		RV_hi_v = nc.createVariable('RV_Hi','f4',('time','k','nlon','nlat'))
-		RV_hi_v.setncatts({'units':'s^-1','description':"Relative vorticity for wavelenghts < {:.1f} km".format(self.Lt_km)})
-		RV_hi_v[0,0,:,:] = self.rv0_hi
-		RV_hi_v[0,1,:,:] = self.rvH_hi
-		# Okubo-Weiss
-		OW_v = nc.createVariable('OW','f4',('time','k','nlon','nlat'))
-		OW_v.setncatts({'units':'s^-2','description':"Okubo-Weiss for all wavelenghts"})
-		OW_v[0,0,:,:] = self.OW_0
-		OW_v[0,1,:,:] = self.OW_H
-		OW_lo_v = nc.createVariable('OW_Lo','f4',('time','k','nlon','nlat'))
-		OW_lo_v.setncatts({'units':'s^-2','description':"Okubo-Weiss for wavelenghts > {:.1f} km".format(self.Lt_km)})
-		OW_lo_v[0,0,:,:] = self.ow0_lo
-		OW_lo_v[0,1,:,:] = self.owH_lo
-		OW_hi_v = nc.createVariable('OW_Hi','f4',('time','k','nlon','nlat'))
-		OW_hi_v.setncatts({'units':'s^-2','description':"Okubo-Weiss for wavelenghts < {:.1f} km".format(self.Lt_km)})
-		OW_hi_v[0,0,:,:] = self.ow0_hi
-		OW_hi_v[0,1,:,:] = self.owH_hi
-		# Ro_b
-		Rob_v = nc.createVariable('Rob','f4',('time','nlon','nlat'))
-		Rob_v.setncatts({'units':'1','description':"Ro_b for all wavelenghts"})
-		Rob_v[0,:,:] = self.Ro_b		
-		Rob_lo_v = nc.createVariable('Rob_Lo','f4',('time','nlon','nlat'))
-		Rob_lo_v.setncatts({'units':'1','description':"Ro_b for wavelenghts > {:.1f} km".format(self.Lt_km)})
-		Rob_lo_v[0,:,:] = self.Rob_lo
-		Rob_hi_v = nc.createVariable('Rob_Hi','f4',('time','nlon','nlat'))
-		Rob_hi_v.setncatts({'units':'1','description':"Ro_b for wavelenghts < {:.1f} km".format(self.Lt_km)})
-		Rob_hi_v[0,:,:] = self.Rob_hi
-
-		nc.close()
-
-	def output(self):
-		if self._target is None:
-			self._target = LocalTarget("{}/Rob_{:05d}.nc".format(filtered_path_fmt.format(self.area_id,self.time_prefix),self.t))
-			self._target.makedirs()
-		return self._target
-
-	def run(self):
-		Lt_m = self.Lt_km*1000
-		self.init()
-		self.filter_uv()
-		self.rob_rv_st()
-		self.to_netcdf()
-
-class ProcessRegion(Task):
-	region_id = IntParameter()
-	Lt_km = FloatParameter()
-	hourly = BoolParameter(default=False)
-
-	def requires(self):
-		t_pfx = "hours" if self.hourly else "days"
-		steps = 9030 if self.hourly else 377
-		for _t in range(steps):
-			yield CreateNetCDF(area_id=self.region_id,Lt_km=self.Lt_km,t=_t,time_prefix=t_pfx,area_face=self.area_face)
+				# ya que save_uv_area() invoca get_values_4_var_k(),
+				# el cual verifica que self.values sea None, de lo contrario no carga la cara siguiente
+				self.clear_values()
 
 class SliceAll(Task):
 	t_pfx = "days"
@@ -578,29 +382,16 @@ class SliceAll(Task):
 			for area_id in ids:
 				yield GetGrid(area_id=area_id,time_prefix=self.t_pfx,area_face=area_face)
 
-## Use this https://stackoverflow.com/questions/21406887/subprocess-changing-directory/21406995
-## and this https://stackoverflow.com/questions/36203059/execute-external-command-and-exchange-variable-using-python
-## Concatenate all files, or by season
-# ncrcat -n 377,3,1 Rob_00000.nc Rob_daily.nc
-# ncrcat -n 91,3,1 Rob_00111.nc Rob_JFM.nc
-# ncrcat -n 92,3,1,364,0 Rob_00322.nc Rob_ASO.nc
-## Averaged files by season
-# ncra -n 91,3,1 Rob_00111.nc Rob_JFM_avg.nc
-# ncra -n 92,3,1,364,0 Rob_00322.nc Rob_ASO_avg.nc
+class GetGrids(Task):
+	time_prefix = Parameter()
 
-class CustomWorkerFactory(object):
-	def create_local_scheduler(self):
-		return Scheduler(prune_on_get_work=True, record_task_history=False)
-
-	def create_remote_scheduler(self, url):
-		return RemoteScheduler(url)
-
-	def create_worker(self, scheduler, worker_processes, assistant=False):
-		# return your worker instance
-		return Worker(scheduler=scheduler, worker_processes=worker_processes, assistant=assistant, keep_alive=True)
+	def requires(self):
+		for area_face,ids in faces_regions.items():
+			for area_id in ids:
+				yield GetGrid(area_id=area_id,area_face=area_face,time_prefix=self.time_prefix)
 
 
-class DownloadVelocities(Task):
+class DownloadVariables(Task):
 	time_prefix = Parameter()
 	season = Parameter()
 
@@ -609,17 +400,32 @@ class DownloadVelocities(Task):
 			for area_id in ids:
 				yield GetGrid(area_id=area_id,area_face=area_face,time_prefix=self.time_prefix)
 			for t in idx_t[self.time_prefix][self.season]:
-				yield GetVelocities(t=t,area_face=area_face,time_prefix=self.time_prefix)
+				yield GetVariables(t=t,area_face=area_face,time_prefix=self.time_prefix)
 
+
+# Renamed with 
+#	find . -type f -wholename "*/[UV]H_*.npz" -execdir rename -n 's/\.\/(.+)H_(.+)/${1}36_${2}/' {} \;^C
+#	find . -type f -wholename "*/[UV]0_*.npz" -execdir rename -n 's/\.\/(.+)0_(.+)/${1}36_${2}/' {} \;^C
+
+# Cleaned up grid files with
+# find . -wholename *hours/lon.txt -delete
+# find . -wholename *hours/lat.txt -delete
+# find . -wholename *hours/dx.txt -delete
+# find . -wholename *hours/dy.txt -delete
+# find . -wholename *days/lon.txt -delete
+# find . -wholename *days/lat.txt -delete
+# find . -wholename *days/dx.txt -delete
+# find . -wholename *days/dy.txt -delete
 
 if __name__ == "__main__":
 	logging.info("Starting Luigi tasks")
 	#n_workers = multiprocessing.cpu_count()
-	n_workers = 5
-	wf_result = luigi.build([DownloadVelocities(time_prefix="hours",season="JFMASO")], workers=n_workers, detailed_summary=True)
-	#wf_result = luigi.build([SliceAll()], workers=n_workers, detailed_summary=True)
-	
-	#wf_result = luigi.build([ProcessRegion(region_id=771,Lt_km=75)], workers=n_workers, detailed_summary=True)
+	n_workers = 7
 
-	#wf_result = luigi.build([ProcessRegion(region_id=730,Lt_km=35)], workers=n_workers, detailed_summary=True)
+	#wf_result = luigi.build([SliceAll()], workers=n_workers, detailed_summary=True)
+
+	#wf_result = luigi.build([GetGrids(time_prefix="hours")], workers=n_workers, detailed_summary=True)
+
+	wf_result = luigi.build([DownloadVariables(time_prefix="hours",season="JFMASO")], workers=n_workers, detailed_summary=True)
+	
 

@@ -4,6 +4,26 @@
 		"selected_items":
 		[
 			[
+				"rA",
+				"rA_24"
+			],
+			[
+				"show",
+				"show_tides"
+			],
+			[
+				"max",
+				"max_iter"
+			],
+			[
+				"data",
+				"DATA_FOLDER"
+			],
+			[
+				"Data",
+				"DATA_FOLDER"
+			],
+			[
 				"lo",
 				"logging"
 			],
@@ -38,10 +58,6 @@
 			[
 				"t_",
 				"time_prefix"
-			],
-			[
-				"max",
-				"max_lon"
 			],
 			[
 				"RV",
@@ -498,27 +514,29 @@
 			[
 				"exec",
 				"execId"
-			],
-			[
-				"execu",
-				"executionId"
-			],
-			[
-				"dateF",
-				"dateFormat"
-			],
-			[
-				"testSt",
-				"testSteps"
-			],
-			[
-				"ex",
-				"execution"
 			]
 		]
 	},
 	"buffers":
 	[
+		{
+			"file": "spectral_analysis/tools/spectral_analysis_tools.py",
+			"settings":
+			{
+				"buffer_size": 11841,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "ro_b_workflow/Rob_workflow.py",
+			"settings":
+			{
+				"buffer_size": 24049,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		}
 	],
 	"build_system": "",
 	"build_system_choices":
@@ -690,19 +708,38 @@
 	"expanded_folders":
 	[
 		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis",
-		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/spectral_analysis"
+		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/anaconda-envs",
+		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/common_vars",
+		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/isotropic_spectra",
+		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/ro_b_workflow",
+		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/spectral_analysis",
+		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/spectral_analysis/preprocess",
+		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/spectral_analysis/tools"
 	],
 	"file_history":
 	[
+		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/isotropic_spectra/wf_spectrum.py",
+		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/spectral_analysis/tools/utils_thesis.py",
+		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/spectral_analysis/preprocess/merge_cRd_Etopo_data.py",
+		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/ro_b_workflow/Rob_workflow.py",
+		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/common_vars/time_slices.py",
+		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/common_vars/regions.py",
+		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/spectral_analysis/preprocess/common_vars.py",
+		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/spectral_analysis/preprocess/create_choropleth_data.py",
+		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/spectral_analysis/preprocess/create_spectra_db.py",
+		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/spectral_analysis/preprocess/create_tiles_jsondb.py",
+		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/common_vars/directories.py",
+		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/ro_b_workflow/time_slices.py",
+		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/spectral_analysis/tools/llc4320_utils.py",
+		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/spectral_analysis/tools/spectral_analysis_tools.py",
+		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/spectral_analysis/tools/utils_RobKFiltered.py",
+		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/anaconda-envs/llc-env.yml",
 		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/common_vars.py",
 		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/spectral_analysis/create_choropleth_data.py",
 		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/spectral_analysis/create_spectra_db.py",
 		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/spectral_analysis/create_tiles_jsondb.py",
 		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/spectral_analysis/merge_cRd_Etopo_data.py",
 		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/spectral_analysis/setup.py",
-		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/spectral_analysis/tools/llc4320_utils.py",
-		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/spectral_analysis/tools/spectral_analysis_tools.py",
-		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/spectral_analysis/tools/utils_thesis.py",
 		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/tools/llc4320_utils.py",
 		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/tools/spectral_analysis_tools.py",
 		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/create_choropleth_data.py",
@@ -808,24 +845,11 @@
 		"/Users/antonimmo/repos/CDH/backend-api/src/main/java/com/viajez/cdh/database/DBConnection.java",
 		"/Users/antonimmo/repos/CDH/backend-api/src/main/java/com/viajez/cdh/database/jdbc/JDBCConnection.java",
 		"/Users/antonimmo/repos/luceneindexesapi/src/main/java/com/viajez/machinelearning/luceneapi/util/LuceneIndexFactory.java",
-		"/Users/antonimmo/repos/CDH/backend-api/src/main/java/com/viajez/cdh/machinelearning/prediction/Predictor.java",
-		"/Users/antonimmo/repos/Duke/src/main/java/no/priv/garshol/duke/Property.java",
-		"/Users/antonimmo/repos/Duke/src/main/java/no/priv/garshol/duke/PropertyImpl.java",
-		"/Users/antonimmo/repos/Duke/src/main/java/no/priv/garshol/duke/matchers/AbstractMatchListener.java",
-		"/Users/antonimmo/repos/Duke/src/main/java/no/priv/garshol/duke/matchers/MatchListener.java",
-		"/Users/antonimmo/repos/travelbi-etl/sources/java/DukeAndMongoDB/src/com/viajez/etl/customerIdentification/matchers/CustomMatchListener.java",
-		"/Users/antonimmo/repos/Duke/src/main/java/no/priv/garshol/duke/Duke.java",
-		"/Users/antonimmo/repos/luceneindexesapi/target/antrun/build-main.xml",
-		"/Users/antonimmo/repos/Duke/pom.xml",
-		"/Users/antonimmo/repos/travelbi-etl/sources/java/DukeAndMongoDB/src/com/viajez/etl/customerIdentification/DeduplicateCustomers.java",
-		"/Users/antonimmo/repos/Duke/src/main/java/no/priv/garshol/duke/ConfigLoader.java",
-		"/Users/antonimmo/twdump.json",
-		"/Users/antonimmo/repos/CDH/backend-api/src/main/java/com/viajez/cdh/restapi/models/ResponseGetParameterSets.java",
-		"/Users/antonimmo/repos/Duke/src/main/java/no/priv/garshol/duke/Database.java"
+		"/Users/antonimmo/repos/CDH/backend-api/src/main/java/com/viajez/cdh/machinelearning/prediction/Predictor.java"
 	],
 	"find":
 	{
-		"height": 40.0
+		"height": 24.0
 	},
 	"find_in_files":
 	{
@@ -839,6 +863,39 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"get_dxdy48",
+			"dxG",
+			"prepro",
+			"regions",
+			"ids_Peru",
+			"ids_Ben",
+			"ids_Kuro",
+			"faces_regions",
+			"ids_Kuro",
+			"area_latlonbox",
+			"max_iter",
+			"idx_t_ASO_hours",
+			"idx_t_JFM_hours",
+			"idx_t_ASO_days",
+			"idx_t_JFM_days",
+			"JAS",
+			"model",
+			"map_",
+			"db",
+			"antonio",
+			"spectra_db",
+			"Path",
+			"'",
+			"prnt",
+			"filtered_path_fmt",
+			"_fmt.format(prnt,",
+			"ds_path_fmt.format(prnt,",
+			"ds_path_fmt",
+			"prnt",
+			"data_folder",
+			"plot_bm_igw_k_forfolderid",
+			"all_",
+			"open"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -856,8 +913,79 @@
 	"groups":
 	[
 		{
+			"selected": 1,
 			"sheets":
 			[
+				{
+					"buffer": 0,
+					"file": "spectral_analysis/tools/spectral_analysis_tools.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 11841,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								7855,
+								7855
+							]
+						],
+						"settings":
+						{
+							"SL.13.region_keys":
+							[
+							],
+							"SL.18.region_keys":
+							[
+							],
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "ro_b_workflow/Rob_workflow.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 24049,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2076,
+								2076
+							]
+						],
+						"settings":
+						{
+							"SL.14.region_keys":
+							[
+							],
+							"SL.38.region_keys":
+							[
+							],
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 670.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				}
 			]
 		}
 	],
