@@ -24,8 +24,10 @@ logging.basicConfig(
 
 # Directorio de los datos geográficos
 prnt_map = "{}/map_data".format(DATA_FOLDER)
-# Directorios de entrada
+# Directorio de entrada
 grid_path = "{}/LLC4320/grid/".format(MODEL_FOLDER)
+# Directorio de salida
+ds_path_fmt = LUIGI_OUT_FOLDER + "/Datasets_compressed/{}/{}"
 
 #min_i,min_j = 576,864	## Esquina inferior izquierda
 #max_i,max_j = 865,1155	## Esquina superior derecha
