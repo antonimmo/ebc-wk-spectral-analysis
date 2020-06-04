@@ -12,7 +12,7 @@ from netCDF4 import Dataset
 from xmitgcm import llcreader,open_mdsdataset
 from scipy.interpolate import interp2d
 # Imports within the same package
-from .output import ds_path_fmt,LUIGI_OUT_FOLDER
+from ..common_vars.directories import LUIGI_OUT_FOLDER
 from ..common_vars.time_slices import max_iter,idx_t
 from ..common_vars.regions import faces_regions
 from ..common_vars.directories import MODEL_FOLDER,DATA_FOLDER

@@ -1,9 +1,9 @@
 import logging
 import numpy as np
-
+#
+from ..common_vars.directories import LUIGI_OUT_FOLDER
 
 ## Directorios
-LUIGI_OUT_FOLDER = "/home/antonio/Tesis"	## Ponerla en common_vars.directories hace más complicado su importación
 ds_path_fmt = LUIGI_OUT_FOLDER+"/Datasets_compressed/{}/{}"
 dxdy_fname_fmt = LUIGI_OUT_FOLDER+"/Datasets_compressed/{}/{}/{}.txt"
 uv_fname_fmt = LUIGI_OUT_FOLDER+"/Datasets_compressed/{0}/{1}/{2}{3:02d}_{4:05d}.npz"
