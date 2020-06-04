@@ -6,6 +6,8 @@ ids_Peru = [450, 572, 596] #616,636  Peru Chile -- 5 to 45 S
 ids_Ben = [533, 578, 602] #459,556, Benguela -- 15 to 37 S ** Quitamos la **459** y ponemos la 602
 ids_Kuro = [733, 751, 796]
 
+all_ids = ids_Cal+ids_Can+ids_Peru+ids_Ben
+
 ids_regions = {
     "California": list(reversed(ids_Cal)),
     "Canarias": list(reversed(ids_Can)),

@@ -519,24 +519,6 @@
 	},
 	"buffers":
 	[
-		{
-			"file": "spectral_analysis/tools/spectral_analysis_tools.py",
-			"settings":
-			{
-				"buffer_size": 11841,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "ro_b_workflow/Rob_workflow.py",
-			"settings":
-			{
-				"buffer_size": 24049,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		}
 	],
 	"build_system": "",
 	"build_system_choices":
@@ -581,6 +563,10 @@
 		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"paka",
+				"Package Control: Install Package"
+			],
 			[
 				"packa",
 				"Package Control: Install Package"
@@ -718,10 +704,13 @@
 	],
 	"file_history":
 	[
+		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/ro_b_workflow/Rob_workflow.py",
+		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/spectral_analysis/tools/spectral_analysis_tools.py",
+		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/spectral_analysis/tools/llc4320_utils.py",
+		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/spectral_analysis/tools/plot_utils.py",
 		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/isotropic_spectra/wf_spectrum.py",
 		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/spectral_analysis/tools/utils_thesis.py",
 		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/spectral_analysis/preprocess/merge_cRd_Etopo_data.py",
-		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/ro_b_workflow/Rob_workflow.py",
 		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/common_vars/time_slices.py",
 		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/common_vars/regions.py",
 		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/spectral_analysis/preprocess/common_vars.py",
@@ -730,8 +719,6 @@
 		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/spectral_analysis/preprocess/create_tiles_jsondb.py",
 		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/common_vars/directories.py",
 		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/ro_b_workflow/time_slices.py",
-		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/spectral_analysis/tools/llc4320_utils.py",
-		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/spectral_analysis/tools/spectral_analysis_tools.py",
 		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/spectral_analysis/tools/utils_RobKFiltered.py",
 		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/anaconda-envs/llc-env.yml",
 		"/Volumes/GoogleDrive/Mon Drive/Tesis/repos/ocean-wk-spectral-analysis/common_vars.py",
@@ -844,8 +831,7 @@
 		"/Users/antonimmo/repos/CDH/backend-api/src/main/java/com/viajez/cdh/restapi/security/AbstractUsersSource.java",
 		"/Users/antonimmo/repos/CDH/backend-api/src/main/java/com/viajez/cdh/database/DBConnection.java",
 		"/Users/antonimmo/repos/CDH/backend-api/src/main/java/com/viajez/cdh/database/jdbc/JDBCConnection.java",
-		"/Users/antonimmo/repos/luceneindexesapi/src/main/java/com/viajez/machinelearning/luceneapi/util/LuceneIndexFactory.java",
-		"/Users/antonimmo/repos/CDH/backend-api/src/main/java/com/viajez/cdh/machinelearning/prediction/Predictor.java"
+		"/Users/antonimmo/repos/luceneindexesapi/src/main/java/com/viajez/machinelearning/luceneapi/util/LuceneIndexFactory.java"
 	],
 	"find":
 	{
@@ -863,6 +849,12 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"\"faces\"",
+			"\"llc\"",
+			"llc",
+			"lonlat_",
+			"read_indexes",
+			"print",
 			"get_dxdy48",
 			"dxG",
 			"prepro",
@@ -913,79 +905,8 @@
 	"groups":
 	[
 		{
-			"selected": 1,
 			"sheets":
 			[
-				{
-					"buffer": 0,
-					"file": "spectral_analysis/tools/spectral_analysis_tools.py",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 11841,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								7855,
-								7855
-							]
-						],
-						"settings":
-						{
-							"SL.13.region_keys":
-							[
-							],
-							"SL.18.region_keys":
-							[
-							],
-							"syntax": "Packages/Python/Python.sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "ro_b_workflow/Rob_workflow.py",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 24049,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2076,
-								2076
-							]
-						],
-						"settings":
-						{
-							"SL.14.region_keys":
-							[
-							],
-							"SL.38.region_keys":
-							[
-							],
-							"syntax": "Packages/Python/Python.sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 670.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				}
 			]
 		}
 	],
