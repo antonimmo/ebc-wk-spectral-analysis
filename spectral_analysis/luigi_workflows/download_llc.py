@@ -29,18 +29,11 @@ grid_path = "{}/LLC4320/grid/".format(MODEL_FOLDER)
 # Directorio de salida
 ds_path_fmt = LUIGI_OUT_FOLDER + "/Datasets_compressed/{}/{}"
 
-#min_i,min_j = 576,864	## Esquina inferior izquierda
-#max_i,max_j = 865,1155	## Esquina superior derecha
-#min_i,min_j = 576,577	## Esquina inferior izquierda
-#max_i,max_j = 865,865	## Esquina superior derecha
-#min_i,min_j = 576,288	## Esquina inferior izquierda
-#max_i,max_j = 865,578	## Esquina superior derecha
-
 Omega = 2*np.pi/(24*3600) # Frecuencia de rotación terrestre
 #vars_wf = ["U","V"] # Variables del modelo
 vars_wf = ["Theta"]
 #k_lvl_idx = [0, 36]  ## z=0 m, z=-400 m (39 para z=-500 m)
-k_lvl_idx = [0,6,12,16,19]#,21,25
+k_lvl_idx = [0,6,12,16,19]#,21,25 ## Para T, y quizás S
 
 ## For test purposes only
 area_latlonbox = {
@@ -54,76 +47,11 @@ class GridMdsBase():
 	#min_i,min_j,max_i,max_j = (None,)*4
 	retry_count = 3
 
-	# def interpmat_48(self,grid_mat):
-	#     # Old
-	#     nrow,ncol = grid_mat.shape
-	#     rows = np.arange(nrow)
-	#     cols = np.arange(ncol)
-	#     interp = interp2d(cols,rows,grid_mat,kind="cubic")
-	#     # New 
-	#     new_r = np.arange(nrow*2)/2
-	#     new_c = np.arange(ncol*2)/2
-	#     return interp(new_c,new_r)
-
 	def get_grid_ds(self):
 		if self.grid_ds is None:
 			logging.info("Reading grid Dataset")
 			self.grid_ds = open_mdsdataset(grid_path, read_grid=True, iters=None, default_dtype=np.float32, geometry="llc").isel(face=self.area_face)
 		return self.grid_ds
-
-	# def get_grid24(self):
-	# 	grid_ds = self.get_grid_ds()
-	# 	logging.info("Fetching grid DXg")
-	# 	DXg_24 = grid_ds.dxG.values
-	# 	logging.info("Fetching grid DXc")
-	# 	DXc_24 = grid_ds.dxC.values
-	# 	logging.info("Fetching grid DYg")
-	# 	DYg_24 = grid_ds.dyG.values
-	# 	logging.info("Fetching grid DYc")
-	# 	DYc_24 = grid_ds.dyC.values
-	# 	logging.info("Fetching grid rAz")
-	# 	rAz_24 = grid_ds.rAz.values
-	# 	logging.info("Fetching grid rAc")
-	# 	rAc_24 = grid_ds.rA.values
-	# 	if self.area_face<=6:
-	# 		logging.info("Returning non-rotated version")
-	# 		return DXg_24,DYg_24,rAz_24,DXc_24,DYc_24,rAc_24
-	# 	else:
-	# 		logging.info("Returning rotated version")
-	# 		return np.rot90(DXg_24),np.rot90(DYg_24),np.rot90(rAz_24),np.rot90(DXc_24),np.rot90(DYc_24),np.rot90(rAc_24)
-
-	# def get_grid48_interp(self):
-	# 	DXg_24,DYg_24,rAz_24,DXc_24,DYc_24,rAc_24 = self.get_grid24()
-	# 	logging.info("Interpolating grid")
-	# 	DXg_48 = self.interpmat_48(DXg_24/2)
-	# 	DXc_48 = self.interpmat_48(DXc_24/2)
-	# 	DYg_48 = self.interpmat_48(DYg_24/2)
-	# 	DYc_48 = self.interpmat_48(DYc_24/2)
-	# 	# Si DX,DY disminuyen en un factor de 2, el área (Az,Ac) lo hace un en un factor de 4
-	# 	rAz_48 = self.interpmat_48(rAz_24/4)
-	# 	rAc_48 = self.interpmat_48(rAc_24/4)
-	# 	return DXg_48,DYg_48,rAz_48,DXc_48,DYc_48,rAc_48
-
-	# def get_lonlat24(self):
-	# 	grid_ds = self.get_grid_ds()
-	# 	logging.info("Fetching grid lon")
-	# 	LON_24 = grid_ds.XG.values
-	# 	logging.info("Fetching grid lat")
-	# 	LAT_24 = grid_ds.YG.values
-	# 	if self.area_face<=6:
-	# 		logging.info("Returning non-rotated version")
-	# 		return LON_24,LAT_24
-	# 	else:
-	# 		logging.info("Returning rotated version")
-	# 		return np.rot90(LON_24),np.rot90(LAT_24)
-
-	# def get_lonlat48_interp(self):
-	# 	LON_24,LAT_24 = self.get_lonlat24()
-	# 	logging.info("Interpolating grid")
-	# 	LON_48 = self.interpmat_48(LON_24)
-	# 	LAT_48 = self.interpmat_48(LAT_24)
-	# 	return LON_48,LAT_48
-
 
 	def get_grid48(self):
 		grid_ds = self.get_grid_ds()
