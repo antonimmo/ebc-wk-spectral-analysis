@@ -24,6 +24,9 @@ faces_regions = {
 	11: ids_Peru
 }
 
+face4id = {v:k for k,l in faces_regions.items() for v in l}
+face4id[0] = 7 ## Todo: Delete this when I write better tests
+
 lats4id = {
     762: 26.641, 787: 31.462, 809: 36.056, 831: 40.411, 852: 44.521, 868: 48.383,
     709: 16.398, 730: 21.611, 750: 26.641, 771: 31.462,

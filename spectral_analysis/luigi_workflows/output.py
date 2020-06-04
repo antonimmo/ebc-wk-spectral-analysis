@@ -2,6 +2,7 @@ import logging
 import numpy as np
 #
 from ..common_vars.directories import LUIGI_OUT_FOLDER
+from ..common_vars.regions import face4id
 
 ## Directorios
 ds_path_fmt = LUIGI_OUT_FOLDER+"/Datasets_compressed/{}/{}"
@@ -14,7 +15,14 @@ def uv4idt(region_id,t_idx,Z_idx,t_res="hours"):
 	fname_v = uv_fname_fmt.format(region_id,t_res,"V",Z_idx,t_idx)
 	U_ = np.load(fname_u)["uv"]
 	V_ = np.load(fname_v)["uv"]
-	return U_,V_
+
+	face = face4id[region_id]
+	if face<=6:
+		return U_,V_
+	# Para face>6, los vectores (U,V) están en las coordenadas "locales"
+	# Ver: https://github.com/MITgcm/MITgcm/issues/248 and https://github.com/MITgcm/xmitgcm/issues/204
+	else:
+		return V_,-1*U_
 
 
 def UV4id(id,time,Z_idx=0,t_res="hours",t_firstaxis=False):
