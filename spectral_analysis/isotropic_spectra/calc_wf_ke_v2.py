@@ -21,11 +21,11 @@ import matplotlib.cm as cm
 from matplotlib import colors, ticker, cm
 from matplotlib.colors import LinearSegmentedColormap
 import matplotlib.mathtext as mathtext
-import wf_spectrum
 import matplotlib.mathtext as mathtext
 from matplotlib.colors import LogNorm
 from scipy import signal
 import h5py
+from .wf_spectrum import spec_est3
 #========================================
 
 #:::::::::::::::::::::::::::::::::::::::::::::::
@@ -116,11 +116,11 @@ for i in range(int(nt)):
       uaux = u[:,:,i*iaux:i*iaux+iaux]
       vaux = v[:,:,i*iaux:i*iaux+iaux]
       if i == 0:
-         Eu,k,l,om = wf_spectrum.spec_est3(uaux,dx,dy,dt)
-         Ev,k,l,om = wf_spectrum.spec_est3(vaux,dx,dy,dt)
+         Eu,k,l,om = spec_est3(uaux,dx,dy,dt)
+         Ev,k,l,om = spec_est3(vaux,dx,dy,dt)
       else:
-         Eua,_,_,_ = wf_spectrum.spec_est3(uaux,dx,dx,dt)
-         Eva,_,_,_ = wf_spectrum.spec_est3(vaux,dx,dx,dt)
+         Eua,_,_,_ = spec_est3(uaux,dx,dx,dt)
+         Eva,_,_,_ = spec_est3(vaux,dx,dx,dt)
          Eu = Eu + Eua
          Ev = Ev + Eva
 Eu = Eu/nt
