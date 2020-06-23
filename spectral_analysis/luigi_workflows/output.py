@@ -9,6 +9,28 @@ ds_path_fmt = LUIGI_OUT_FOLDER+"/Datasets_compressed/{}/{}"
 dxdy_fname_fmt = LUIGI_OUT_FOLDER+"/Datasets_compressed/{}/{}/{}.txt"
 uv_fname_fmt = LUIGI_OUT_FOLDER+"/Datasets_compressed/{0}/{1}/{2}{3:02d}_{4:05d}.npz"
 
+def heatFlux4idt(region_id,t_idx,Z_idx,t_res="hours"):
+	fname_hf = uv_fname_fmt.format(region_id,t_res,"oceQnet",Z_idx,t_idx)
+	hf = np.load(fname_hf)["uv"]
+	
+	return hf
+
+def H4id(id,time,Z_idx=0,t_res="hours",t_firstaxis=False):
+	for idx,t in enumerate(time):
+		HF_ = heatFlux4idt(id,t,Z_idx,t_res)
+		if idx==0:
+			logging.debug("{},{}".format(id,t))
+			shape_uv = HF_.shape
+			shape = (shape_uv[0],shape_uv[1],len(time))
+			logging.info("HF shape (k={}): {}".format(Z_idx,shape))
+			HF = np.zeros(shape)
+		HF[:,:,idx] = HF_
+
+	if t_firstaxis:
+		HF = np.moveaxis(HF,-1,0)
+
+	return HF
+
 
 def uv4idt(region_id,t_idx,Z_idx,t_res="hours"):
 	fname_u = uv_fname_fmt.format(region_id,t_res,"U",Z_idx,t_idx)

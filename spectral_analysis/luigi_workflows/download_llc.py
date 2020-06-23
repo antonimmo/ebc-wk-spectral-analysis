@@ -31,9 +31,11 @@ ds_path_fmt = LUIGI_OUT_FOLDER + "/Datasets_compressed/{}/{}"
 
 Omega = 2*np.pi/(24*3600) # Frecuencia de rotación terrestre
 #vars_wf = ["U","V"] # Variables del modelo
-vars_wf = ["Theta"]
+#vars_wf = ["Theta"]
+vars_wf = ["oceQnet"]
 #k_lvl_idx = [0, 36]  ## z=0 m, z=-400 m (39 para z=-500 m)
-k_lvl_idx = [0,6,12,16,19]#,21,25 ## Para T, y quizás S
+#k_lvl_idx = [0,6,12,16,19]#,21,25 ## Para T, y quizás S
+k_lvl_idx = [0]
 
 ## For test purposes only
 area_latlonbox = {
