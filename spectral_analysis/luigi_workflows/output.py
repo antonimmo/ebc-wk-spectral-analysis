@@ -9,6 +9,28 @@ ds_path_fmt = LUIGI_OUT_FOLDER+"/Datasets_compressed/{}/{}"
 dxdy_fname_fmt = LUIGI_OUT_FOLDER+"/Datasets_compressed/{}/{}/{}.txt"
 uv_fname_fmt = LUIGI_OUT_FOLDER+"/Datasets_compressed/{0}/{1}/{2}{3:02d}_{4:05d}.npz"
 
+def theta4idt(region_id,t_idx,Z_idx,t_res="hours"):
+	fname_hf = uv_fname_fmt.format(region_id,t_res,"Theta",Z_idx,t_idx)
+	hf = np.load(fname_hf)["uv"]
+	
+	return hf
+
+def Theta4id(id,time,Z_idx=0,t_res="hours",t_firstaxis=False):
+	for idx,t in enumerate(time):
+		T_ = theta4idt(id,t,Z_idx,t_res)
+		if idx==0:
+			logging.debug("{},{}".format(id,t))
+			shape_uv = T_.shape
+			shape = (shape_uv[0],shape_uv[1],len(time))
+			logging.info("Theta shape (k={}): {}".format(Z_idx,shape))
+			T = np.zeros(shape)
+		T[:,:,idx] = T_
+
+	if t_firstaxis:
+		T = np.moveaxis(T,-1,0)
+
+	return T
+
 def heatFlux4idt(region_id,t_idx,Z_idx,t_res="hours"):
 	fname_hf = uv_fname_fmt.format(region_id,t_res,"oceQnet",Z_idx,t_idx)
 	hf = np.load(fname_hf)["uv"]

@@ -31,12 +31,12 @@ ds_path_fmt = LUIGI_OUT_FOLDER + "/Datasets_compressed/{}/{}"
 
 Omega = 2*np.pi/(24*3600) # Frecuencia de rotación terrestre
 #vars_wf = ["U","V"] # Variables del modelo
-#vars_wf = ["Theta"]
+vars_wf = ["Theta","Salt"]
 #vars_wf = ["oceQnet"]
-vars_wf = ["Eta"]
+#vars_wf = ["Eta"]
 #k_lvl_idx = [0, 36]  ## z=0 m, z=-400 m (39 para z=-500 m)
 #k_lvl_idx = [0,6,12,16,19]#,21,25 ## Para T, y quizás S
-k_lvl_idx = [0]
+k_lvl_idx = [1]
 
 ## For test purposes only
 area_latlonbox = {
@@ -250,11 +250,11 @@ class GetVariables(Task,GridMdsBase):
 			model = llcreader.ECCOPortalLLC4320Model()
 			model.iter_stop = max_iter
 			hourly_step = 24 if (self.time_prefix=="days") else 1
-			logging.info("Class GetVariables - reading variables ({}) Dataset (face={},t={},t_ds={})".format(vars_wf,self.area_face,self.t,self.t_ds))				# 144 iters = 1 hr, so 144*24 = 1 day
 			self.ds_area = model.get_dataset(
 				varnames=vars_wf,k_chunksize=1,type="faces",iter_step=144*hourly_step
 				).isel(time=self.t,face=self.area_face,k=k_lvl_idx)
 			self.t_ds = self.ds_area.time.values
+			logging.info("Class GetVariables - reading variables ({}) Dataset (face={},t={},t_ds={})".format(vars_wf,self.area_face,self.t,self.t_ds))				# 144 iters = 1 hr, so 144*24 = 1 day
 		return self.ds_area
 
 	def clear_values(self):
@@ -353,7 +353,7 @@ class DownloadVariables(Task):
 if __name__ == "__main__":
 	logging.info("Starting Luigi tasks")
 	#n_workers = multiprocessing.cpu_count()
-	n_workers = 7
+	n_workers = 5
 
 	#wf_result = luigi.build([SliceAll()], workers=n_workers, detailed_summary=True)
 
