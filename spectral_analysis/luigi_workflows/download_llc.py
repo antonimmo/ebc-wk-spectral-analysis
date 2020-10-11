@@ -350,15 +350,22 @@ class DownloadVariables(Task):
 # find . -wholename *days/dx.txt -delete
 # find . -wholename *days/dy.txt -delete
 
+#n_workers = multiprocessing.cpu_count()
+n_workers = 1
+luigi_opts = {
+    "workers":n_workers,
+    "detailed_summary":False,
+    "scheduler_host":"34.83.94.39", 
+    "scheduler_port":8080
+}
+
 if __name__ == "__main__":
-	logging.info("Starting Luigi tasks")
-	#n_workers = multiprocessing.cpu_count()
-	n_workers = 1
+	logging.info("Starting Luigi tasks")	
 
-	#wf_result = luigi.build([SliceAll()], workers=n_workers, detailed_summary=True)
+	#wf_result = luigi.build([SliceAll()], workers=n_workers, **luigi_opts)
 
-	#wf_result = luigi.build([GetGrids(time_prefix="hours")], workers=n_workers, detailed_summary=True)
+	#wf_result = luigi.build([GetGrids(time_prefix="hours")], **luigi_opts)
 
-	wf_result = luigi.build([DownloadVariables(time_prefix="hours",season="JFMASO")], workers=n_workers, detailed_summary=False, scheduler_host="34.83.94.39", scheduler_port=8080)
+	wf_result = luigi.build([DownloadVariables(time_prefix="hours",season="ASO")], **luigi_opts)
 
 
