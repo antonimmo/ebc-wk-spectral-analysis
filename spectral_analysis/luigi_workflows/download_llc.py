@@ -234,7 +234,7 @@ class GetGrid(Task,GridMdsBase):
 
 class GetSingleVariable(Task,GridMdsBase):
 	t = IntParameter()
-    model_var = Parameter()
+	model_var = Parameter()
 	t_ds = None
 	_target = None
 	ds_area = None
@@ -296,15 +296,15 @@ class GetSingleVariable(Task,GridMdsBase):
 		return self._target
 
 	def run(self):
-        for k_idx,k_lvl in enumerate(k_lvl_idx):
-            for area_id in faces_regions[self.area_face]:
-                logging.info("Loading indexes for area {} (face={},t={})".format(area_id,self.area_face,self.t))
-                min_i,min_j,max_i,max_j = self.read_indexes(area_id)
-                self.save_uv_area(area_id,self.model_var,k_idx,k_lvl,min_j,max_j,min_i,max_i)
-                # Se tiene que limpiar los datos de la cara que se leyó, 
-                # ya que save_uv_area() invoca get_values_4_var_k(),
-                # el cual verifica que self.values sea None, de lo contrario no carga la cara siguiente
-                self.clear_values()
+		for k_idx,k_lvl in enumerate(k_lvl_idx):
+			for area_id in faces_regions[self.area_face]:
+				logging.info("Loading indexes for area {} (face={},t={})".format(area_id,self.area_face,self.t))
+				min_i,min_j,max_i,max_j = self.read_indexes(area_id)
+				self.save_uv_area(area_id,self.model_var,k_idx,k_lvl,min_j,max_j,min_i,max_i)
+				# Se tiene que limpiar los datos de la cara que se leyó, 
+				# ya que save_uv_area() invoca get_values_4_var_k(),
+				# el cual verifica que self.values sea None, de lo contrario no carga la cara siguiente
+				self.clear_values()
 
 class SliceAll(Task):
 	t_pfx = "days"
@@ -332,8 +332,8 @@ class DownloadVariables(Task):
 			for area_id in ids:
 				yield GetGrid(area_id=area_id,area_face=area_face,time_prefix=self.time_prefix)
 			for t in idx_t[self.time_prefix][self.season]:
-                for var_ in vars_wf
-                    yield GetSingleVariable(t=t,model_var=var_,area_face=area_face,time_prefix=self.time_prefix)
+				for var_ in vars_wf
+					yield GetSingleVariable(t=t,model_var=var_,area_face=area_face,time_prefix=self.time_prefix)
 
 
 # Renamed with 
