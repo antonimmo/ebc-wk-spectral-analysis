@@ -332,7 +332,7 @@ class DownloadVariables(Task):
 			for area_id in ids:
 				yield GetGrid(area_id=area_id,area_face=area_face,time_prefix=self.time_prefix)
 			for t in idx_t[self.time_prefix][self.season]:
-				for var_ in vars_wf
+				for var_ in vars_wf:
 					yield GetSingleVariable(t=t,model_var=var_,area_face=area_face,time_prefix=self.time_prefix)
 
 
