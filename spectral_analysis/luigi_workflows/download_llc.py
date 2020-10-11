@@ -354,8 +354,7 @@ class DownloadVariables(Task):
 n_workers = 1
 luigi_opts = {
     "workers":n_workers,
-    "detailed_summary":False,
-    "scheduler_host":"34.83.94.39", 
+    "detailed_summary":False, 
     "scheduler_port":8080
 }
 
