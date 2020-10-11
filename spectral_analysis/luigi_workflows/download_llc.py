@@ -31,8 +31,8 @@ ds_path_fmt = LUIGI_OUT_FOLDER + "/Datasets_compressed/{}/{}"
 
 Omega = 2*np.pi/(24*3600) # Frecuencia de rotación terrestre
 #vars_wf = ["U","V"] # Variables del modelo
-#vars_wf = ["Theta","oceQnet","oceTAUX","oceTAUX","U","V"]
-vars_wf = ["oceQnet"]
+vars_wf = ["oceQnet","oceTAUX","oceTAUX","U","V"]
+#vars_wf = ["oceQnet"]
 #vars_wf = ["Eta"]
 #k_lvl_idx = [0, 36]  ## z=0 m, z=-400 m (39 para z=-500 m)
 #k_lvl_idx = [0,6,12,16,19]#,21,25 ## Para T, y quizás S
@@ -351,21 +351,19 @@ class DownloadVariables(Task):
 # find . -wholename *days/dy.txt -delete
 
 #n_workers = multiprocessing.cpu_count()
-n_workers = 5
+
 luigi_opts = {
-    "workers":n_workers,
-    "detailed_summary":False,
-    "scheduler_host":"34.83.94.39", 
-    "scheduler_port":8080
+    "workers": 10,
+    "detailed_summary": False,
+    "scheduler_host": "34.83.94.39", 
+    "scheduler_port": 8080
 }
 
 if __name__ == "__main__":
 	logging.info("Starting Luigi tasks")	
 
-	#wf_result = luigi.build([SliceAll()], workers=n_workers, **luigi_opts)
+	#wf_result = luigi.build([SliceAll()], **luigi_opts)
 
 	#wf_result = luigi.build([GetGrids(time_prefix="hours")], **luigi_opts)
 
-	wf_result = luigi.build([DownloadVariables(time_prefix="hours",season="ASO")], **luigi_opts)
-
-
+	wf_result = luigi.build([DownloadVariables(time_prefix="hours",season="JFM")], **luigi_opts)
