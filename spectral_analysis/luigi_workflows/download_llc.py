@@ -231,10 +231,10 @@ class GetGrid(Task,GridMdsBase):
 		self.get_dxdy(min_j,max_j,min_i,max_i)
 		self.get_lonlatf(min_j,max_j,min_i,max_i)
 
-class GetVariables(Task,GridMdsBase):
-	#area_id = IntParameter()
-	#area_face = IntParameter()
+
+class GetSingleVariable(Task,GridMdsBase):
 	t = IntParameter()
+    model_var = Parameter()
 	t_ds = None
 	_target = None
 	ds_area = None
@@ -251,10 +251,10 @@ class GetVariables(Task,GridMdsBase):
 			model.iter_stop = max_iter
 			hourly_step = 24 if (self.time_prefix=="days") else 1
 			self.ds_area = model.get_dataset(
-				varnames=vars_wf,k_chunksize=1,type="faces",iter_step=144*hourly_step
+				varnames=[self.model_var],k_chunksize=1,type="faces",iter_step=144*hourly_step
 				).isel(time=self.t,face=self.area_face,k=k_lvl_idx)
 			self.t_ds = self.ds_area.time.values
-			logging.info("Class GetVariables - reading variables ({}) Dataset (face={},t={},t_ds={})".format(vars_wf,self.area_face,self.t,self.t_ds))				# 144 iters = 1 hr, so 144*24 = 1 day
+			logging.info("Class GetSingleVariable - reading variables ({}) Dataset (face={},t={},t_ds={})".format(vars_wf,self.area_face,self.t,self.t_ds))				# 144 iters = 1 hr, so 144*24 = 1 day
 		return self.ds_area
 
 	def clear_values(self):
@@ -264,7 +264,7 @@ class GetVariables(Task,GridMdsBase):
 		# Solo si no se ha leido antes
 		# Se da por hecho que después de iterar en las areas de cada cara, se corre self.clear_values()
 		if self.values is None:
-			logging.info("Class GetVariables - reading {}{:02d} (face={},t={})".format(model_var,k_lvl,self.area_face,self.t))
+			logging.info("Class GetSingleVariable - reading {}{:02d} (face={},t={})".format(model_var,k_lvl,self.area_face,self.t))
 			ds_area_t_z = self.get_ds_area().isel(k=k_idx)
 			self.values = ds_area_t_z[model_var].values
 			# Corregimos para los recuadros del 7 en adelante
@@ -289,23 +289,22 @@ class GetVariables(Task,GridMdsBase):
 	def output(self):
 		if self._target is None:
 			self._target = [
-				LocalTarget("{}/{}{:02d}_{:05d}.npz".format(ds_path_fmt.format(area_id,self.time_prefix),var_,z_,self.t)) 
-				for var_ in vars_wf for z_ in k_lvl_idx for area_id in faces_regions[self.area_face]
+				LocalTarget("{}/{}{:02d}_{:05d}.npz".format(ds_path_fmt.format(area_id,self.time_prefix),self.model_var,z_,self.t)) 
+				for z_ in k_lvl_idx for area_id in faces_regions[self.area_face]
 			]
 			self._target[0].makedirs()
 		return self._target
 
 	def run(self):
-		for var_name in vars_wf:
-			for k_idx,k_lvl in enumerate(k_lvl_idx):
-				for area_id in faces_regions[self.area_face]:
-					logging.info("Loading indexes for area {} (face={},t={})".format(area_id,self.area_face,self.t))
-					min_i,min_j,max_i,max_j = self.read_indexes(area_id)
-					self.save_uv_area(area_id,var_name,k_idx,k_lvl,min_j,max_j,min_i,max_i)
-				# Se tiene que limpiar los datos de la cara que se leyó, 
-				# ya que save_uv_area() invoca get_values_4_var_k(),
-				# el cual verifica que self.values sea None, de lo contrario no carga la cara siguiente
-				self.clear_values()
+        for k_idx,k_lvl in enumerate(k_lvl_idx):
+            for area_id in faces_regions[self.area_face]:
+                logging.info("Loading indexes for area {} (face={},t={})".format(area_id,self.area_face,self.t))
+                min_i,min_j,max_i,max_j = self.read_indexes(area_id)
+                self.save_uv_area(area_id,self.model_var,k_idx,k_lvl,min_j,max_j,min_i,max_i)
+                # Se tiene que limpiar los datos de la cara que se leyó, 
+                # ya que save_uv_area() invoca get_values_4_var_k(),
+                # el cual verifica que self.values sea None, de lo contrario no carga la cara siguiente
+                self.clear_values()
 
 class SliceAll(Task):
 	t_pfx = "days"
@@ -333,7 +332,8 @@ class DownloadVariables(Task):
 			for area_id in ids:
 				yield GetGrid(area_id=area_id,area_face=area_face,time_prefix=self.time_prefix)
 			for t in idx_t[self.time_prefix][self.season]:
-				yield GetVariables(t=t,area_face=area_face,time_prefix=self.time_prefix)
+                for var_ in vars_wf
+                    yield GetSingleVariable(t=t,model_var=var_,area_face=area_face,time_prefix=self.time_prefix)
 
 
 # Renamed with 
