@@ -31,12 +31,12 @@ ds_path_fmt = LUIGI_OUT_FOLDER + "/Datasets_compressed/{}/{}"
 
 Omega = 2*np.pi/(24*3600) # Frecuencia de rotación terrestre
 #vars_wf = ["U","V"] # Variables del modelo
-vars_wf = ["Theta","Salt"]
-#vars_wf = ["oceQnet"]
+#vars_wf = ["Theta","oceQnet","oceTAUX","oceTAUX","U","V"]
+vars_wf = ["oceQnet"]
 #vars_wf = ["Eta"]
 #k_lvl_idx = [0, 36]  ## z=0 m, z=-400 m (39 para z=-500 m)
 #k_lvl_idx = [0,6,12,16,19]#,21,25 ## Para T, y quizás S
-k_lvl_idx = [1]
+k_lvl_idx = [0]
 
 ## For test purposes only
 area_latlonbox = {
@@ -353,12 +353,12 @@ class DownloadVariables(Task):
 if __name__ == "__main__":
 	logging.info("Starting Luigi tasks")
 	#n_workers = multiprocessing.cpu_count()
-	n_workers = 5
+	n_workers = 1
 
 	#wf_result = luigi.build([SliceAll()], workers=n_workers, detailed_summary=True)
 
 	#wf_result = luigi.build([GetGrids(time_prefix="hours")], workers=n_workers, detailed_summary=True)
 
-	wf_result = luigi.build([DownloadVariables(time_prefix="hours",season="JFMASO")], workers=n_workers, detailed_summary=True)
-	
+	wf_result = luigi.build([DownloadVariables(time_prefix="hours",season="JFMASO")], workers=n_workers, detailed_summary=False, scheduler_host="34.83.94.39", scheduler_port=8080)
+
 
