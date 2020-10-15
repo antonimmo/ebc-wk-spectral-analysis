@@ -30,8 +30,8 @@ grid_path = "{}/LLC4320/grid/".format(MODEL_FOLDER)
 ds_path_fmt = LUIGI_OUT_FOLDER + "/Datasets_compressed/{}/{}"
 
 Omega = 2*np.pi/(24*3600) # Frecuencia de rotación terrestre
-#vars_wf = ["U","V"] # Variables del modelo
-vars_wf = ["oceQnet","oceTAUX","oceTAUY"]
+vars_wf = ["U","V"] # Variables del modelo
+#vars_wf = ["oceQnet","oceTAUX","oceTAUY"]
 #vars_wf = ["oceQnet"]
 #vars_wf = ["Eta"]
 #k_lvl_idx = [0, 36]  ## z=0 m, z=-400 m (39 para z=-500 m)
@@ -355,7 +355,7 @@ class DownloadVariables(Task):
 luigi_opts = {
     "workers": 10,
     "detailed_summary": False,
-    "scheduler_host": "34.83.94.39", 
+    "scheduler_host": "10.138.0.2", 
     "scheduler_port": 8080
 }
 
