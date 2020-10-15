@@ -11,6 +11,8 @@ from luigi.rpc import RemoteScheduler
 from netCDF4 import Dataset
 from xmitgcm import llcreader,open_mdsdataset
 from scipy.interpolate import interp2d
+# GCP profiling
+import googlecloudprofiler
 # Imports within the same package
 from ..common_vars.directories import LUIGI_OUT_FOLDER
 from ..common_vars.time_slices import max_iter,idx_t
@@ -365,5 +367,16 @@ if __name__ == "__main__":
 	#wf_result = luigi.build([SliceAll()], **luigi_opts)
 
 	#wf_result = luigi.build([GetGrids(time_prefix="hours")], **luigi_opts)
+    try:
+			googlecloudprofiler.start(
+			service='luigi-worker-profiler',
+			service_version='1.5.0',
+			# verbose is the logging level. 0-error, 1-warning, 2-info,
+			# 3-debug. It defaults to 0 (error) if not set.
+			verbose=3,
+			# project_id must be set if not running on GCP.
+			# project_id='my-project-id',
+	except (ValueError, NotImplementedError) as exc:
+		print(exc)  # Handle errors here
 
 	wf_result = luigi.build([DownloadVariables(time_prefix="hours",season="JFM")], **luigi_opts)
