@@ -355,7 +355,7 @@ class DownloadVariables(Task):
 #n_workers = multiprocessing.cpu_count()
 
 luigi_opts = {
-    "workers": 10,
+    "workers": 5,
     "detailed_summary": False,
     "scheduler_host": "10.138.0.2", 
     "scheduler_port": 8080
