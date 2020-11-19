@@ -26,6 +26,15 @@ class LLCRegion():
     self.__timeVec = timeVec
     self.__grid = VorticityGrid(rid, t_res)
 
+
+  def getGridC(self):
+    return self.__grid.xyc
+
+
+  def getGridG(self):
+    return self.__grid.xyg
+
+
   def _var4IdTs(self, var_name, t_idx, Z_idx):
     fname_hf = uv_fname_fmt.format(self.__regionId, self.__timeRes, var_name, Z_idx, t_idx)
     v = np.load(fname_hf)["uv"]
@@ -66,18 +75,24 @@ class LLCRegion():
     
     self.__vars[out_var_name] = (xVec, yVec)
 
+
   def norm(self, vec_var_name, out_var_name):
+    logging.info("Calculating {} = |{}|".format(out_var_name, vec_var_name))
     xVec,yVec = self.__vars[vec_var_name]
     self.__vars[out_var_name] = np.sqrt(xVec**2 + yVec**2)
 
+
   def divergence(self, vec_var_name, out_var_name):
+    logging.info("Calculating {} = div({})".format(out_var_name, vec_var_name))
     xVec,yVec = self.__vars[vec_var_name]
-    div = self.__grid.div(np.moveaxis(xVec,-1,0), np.moveaxis(yVec,-1,0))
+    div = self.__grid.div(np.moveaxis(xVec, -1, 0), np.moveaxis(yVec, -1, 0))
     self.__vars[out_var_name] = np.moveaxis(div, 0, -1)
 
+
   def hcurl(self, vec_var_name, out_var_name):
+    logging.info("Calculating {} = curl_h({})".format(out_var_name, vec_var_name))
     xVec,yVec = self.__vars[vec_var_name]
-    rot = self.__grid.rv(np.moveaxis(xVec,-1,0), np.moveaxis(yVec,-1,0))
+    rot = self.__grid.rv(np.moveaxis(xVec, -1, 0), np.moveaxis(yVec, -1, 0))
     self.__vars[out_var_name] = np.moveaxis(rot, 0, -1)
 
 
