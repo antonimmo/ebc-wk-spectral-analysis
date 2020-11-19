@@ -88,6 +88,40 @@ def UV4id(id,time,Z_idx=0,t_res="hours",t_firstaxis=False):
 
 	return U,V
 
+def tau4idt(region_id,t_idx,Z_idx,t_res="hours"):
+	fname_taux = uv_fname_fmt.format(region_id,t_res,"oceTAUX",Z_idx,t_idx)
+	fname_tauy = uv_fname_fmt.format(region_id,t_res,"oceTAUY",Z_idx,t_idx)
+	Tx_ = np.load(fname_taux)["uv"]
+	Ty_ = np.load(fname_tauy)["uv"]
+
+	face = face4id[region_id]
+	if face<=6:
+		return Tx_,Ty_
+	# Para face>6, los vectores (tauX,tauY) están en las coordenadas "locales"
+	# Ver: https://github.com/MITgcm/MITgcm/issues/248 and https://github.com/MITgcm/xmitgcm/issues/204
+	else:
+		return Tx_,-1*Ty_
+
+
+def Tau4id(id,time,Z_idx=0,t_res="hours",t_firstaxis=False):
+	for idx,t in enumerate(time):
+		Tx_,Ty_ = tau4idt(id,t,Z_idx,t_res)
+		if idx==0:
+			logging.debug("{},{}".format(id,t))
+			shape_uv = Tx_.shape
+			shape = (shape_uv[0],shape_uv[1],len(time))
+			logging.info("TAUxy shape (k={}): {}".format(Z_idx,shape))
+			TauX = np.zeros(shape)
+			TauY = np.zeros(shape)
+		TauX[:,:,idx] = Tx_
+		TauY[:,:,idx] = Ty_
+
+	if t_firstaxis:
+		TauX = np.moveaxis(TauX,-1,0)
+		TauY = np.moveaxis(TauY,-1,0)
+
+	return TauX,TauY
+
 
 class VorticityGrid():
 	dxc,dxg,dyc,dyg,rAz,rAc,lon_c,lon_g,lat_c,lat_g,f = (None,)*11

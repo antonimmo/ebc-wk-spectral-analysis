@@ -17,11 +17,11 @@ ids_regions = {
 }
 
 faces_regions = {
-	1: ids_Ben,
-	2: ids_Can,
-	7: ids_Kuro+ids_Cal2,
-	10: ids_Cal1,
-	11: ids_Peru
+    1: ids_Ben,
+    2: ids_Can,
+    7: ids_Kuro+ids_Cal2,
+    10: ids_Cal1,
+    11: ids_Peru
 }
 
 face4id = {v:k for k,l in faces_regions.items() for v in l}

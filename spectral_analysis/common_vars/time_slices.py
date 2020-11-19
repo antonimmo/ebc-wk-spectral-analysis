@@ -19,14 +19,14 @@ idx_t_ASO_hours = [(24*i)+hr for i in range(model_days) if (i>=323 and i<415) fo
 
 ## Estructura que engloba todo
 idx_t = {
-	"days": {
-		"JFM": idx_t_JFM_days,
-		"ASO": idx_t_ASO_days,
-		"JFMASO": idx_t_JFM_days+idx_t_ASO_days
-	},
-	"hours": {
-		"JFM": idx_t_JFM_hours,
-		"ASO": idx_t_ASO_hours,
-		"JFMASO": idx_t_JFM_hours+idx_t_ASO_hours
-	}
+    "days": {
+        "JFM": idx_t_JFM_days,
+        "ASO": idx_t_ASO_days,
+        "JFMASO": idx_t_JFM_days+idx_t_ASO_days
+    },
+    "hours": {
+        "JFM": idx_t_JFM_hours,
+        "ASO": idx_t_ASO_hours,
+        "JFMASO": idx_t_JFM_hours+idx_t_ASO_hours
+    }
 }

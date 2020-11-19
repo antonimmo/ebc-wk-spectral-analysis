@@ -1,4 +1,4 @@
-def spec_est3(A,B,d1,d2,d3):
+def cospec_ab(A,B,d1,d2,d3):
     import numpy as np
     l1,l2,l3 = A.shape
     print('before fftn')
