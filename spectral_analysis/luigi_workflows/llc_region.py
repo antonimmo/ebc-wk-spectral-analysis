@@ -54,7 +54,7 @@ class LLCRegion():
     self.__vars[var_name] = self.varForId(var_name)
 
 
-  def loadHorizontalVector(self, x_var_name, y_var_name):
+  def loadHorizontalVector(self, x_var_name, y_var_name, out_var_name):
     xVec = self.varForId(x_var_name)
     yVec = self.varForId(y_var_name)
 
@@ -64,24 +64,21 @@ class LLCRegion():
     if face>6:
        xVec,yVec = yVec,-1*xVec
     
-    self.__vars[x_var_name] = xVec
-    self.__vars[y_var_name] = yVec
+    self.__vars[out_var_name] = (xVec, yVec)
 
-  def divergence(self, x_var_name, y_var_name, out_var_name):
-    xVec = self.__vars[x_var_name]
-    yVec = self.__vars[y_var_name]
-    xVec_tfirst = np.moveaxis(xVec,-1,0)
-    yVec_tfirst = np.moveaxis(yVec,-1,0)
-    div = self.__grid.div(xVec_tfirst,yVec_tfirst)
-    self.__vars[out_var_name] =  np.moveaxis(div,0,-1)
+  def norm(self, vec_var_name, out_var_name):
+    xVec,yVec = self.__vars[vec_var_name]
+    self.__vars[out_var_name] = np.sqrt(xVec**2 + yVec**2)
 
-  def curl(self, x_var_name, y_var_name, out_var_name):
-    xVec = self.__vars[x_var_name]
-    yVec = self.__vars[y_var_name]
-    xVec_tfirst = np.moveaxis(xVec,-1,0)
-    yVec_tfirst = np.moveaxis(yVec,-1,0)
-    rot = self.__grid.rv(xVec_tfirst,yVec_tfirst)
-    self.__vars[out_var_name] =  np.moveaxis(rot,0,-1)
+  def divergence(self, vec_var_name, out_var_name):
+    xVec,yVec = self.__vars[vec_var_name]
+    div = self.__grid.div(np.moveaxis(xVec,-1,0), np.moveaxis(yVec,-1,0))
+    self.__vars[out_var_name] = np.moveaxis(div, 0, -1)
+
+  def hcurl(self, vec_var_name, out_var_name):
+    xVec,yVec = self.__vars[vec_var_name]
+    rot = self.__grid.rv(np.moveaxis(xVec,-1,0), np.moveaxis(yVec,-1,0))
+    self.__vars[out_var_name] = np.moveaxis(rot, 0, -1)
 
 
   def get(self, var_name):
