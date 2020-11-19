@@ -100,7 +100,7 @@ def tau4idt(region_id,t_idx,Z_idx,t_res="hours"):
 	# Para face>6, los vectores (tauX,tauY) están en las coordenadas "locales"
 	# Ver: https://github.com/MITgcm/MITgcm/issues/248 and https://github.com/MITgcm/xmitgcm/issues/204
 	else:
-		return Tx_,-1*Ty_
+		return Ty_,-1*Tx_
 
 
 def Tau4id(id,time,Z_idx=0,t_res="hours",t_firstaxis=False):

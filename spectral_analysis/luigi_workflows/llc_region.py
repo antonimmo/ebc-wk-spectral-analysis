@@ -17,6 +17,7 @@ class LLCRegion():
   __regionId = None
   __timeRes = None
   __timeVec = None
+  __face = None
 
 
   def __init__(self, rid, timeVec, t_res="hours"):
@@ -24,6 +25,7 @@ class LLCRegion():
     self.__regionId = rid
     self.__timeRes = t_res
     self.__timeVec = timeVec
+    self.__face = face4id[rid]
     self.__grid = VorticityGrid(rid, t_res)
 
 
@@ -69,33 +71,33 @@ class LLCRegion():
 
     # Para face>6, los vectores (U,V) están en las coordenadas "locales"
     # Ver: https://github.com/MITgcm/MITgcm/issues/248 and https://github.com/MITgcm/xmitgcm/issues/204
-    face = face4id[self.__regionId]
-    if face>6:
+    
+    if self.__face>6:
        xVec,yVec = yVec,-1*xVec
     
     self.__vars[out_var_name] = (xVec, yVec)
 
 
+  def get(self, var_name):
+    return self.__vars[var_name]
+
+
   def norm(self, vec_var_name, out_var_name):
     logging.info("Calculating {} = |{}|".format(out_var_name, vec_var_name))
-    xVec,yVec = self.__vars[vec_var_name]
+    xVec,yVec = self.get(vec_var_name)
     self.__vars[out_var_name] = np.sqrt(xVec**2 + yVec**2)
 
 
   def divergence(self, vec_var_name, out_var_name):
     logging.info("Calculating {} = div({})".format(out_var_name, vec_var_name))
-    xVec,yVec = self.__vars[vec_var_name]
+    xVec,yVec = self.get(vec_var_name)
     div = self.__grid.div(np.moveaxis(xVec, -1, 0), np.moveaxis(yVec, -1, 0))
     self.__vars[out_var_name] = np.moveaxis(div, 0, -1)
 
 
   def hcurl(self, vec_var_name, out_var_name):
     logging.info("Calculating {} = curl_h({})".format(out_var_name, vec_var_name))
-    xVec,yVec = self.__vars[vec_var_name]
+    xVec,yVec = self.get(vec_var_name)
     rot = self.__grid.rv(np.moveaxis(xVec, -1, 0), np.moveaxis(yVec, -1, 0))
     self.__vars[out_var_name] = np.moveaxis(rot, 0, -1)
-
-
-  def get(self, var_name):
-    return self.__vars[var_name]
 
