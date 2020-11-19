@@ -40,7 +40,7 @@ class LLCRegion():
         logging.debug("{},{}".format(id, t))
         shape_uv = V_.shape
         shape = (shape_uv[0], shape_uv[1], len(self.__timeVec))
-        logging.info("Theta shape (k={}): {}".format(Z_idx, shape))
+        logging.info("Loading {}: shape (k={}): {}".format(var_name, Z_idx, shape))
         V = np.zeros(shape)
       V[:,:,idx] = V_
 
