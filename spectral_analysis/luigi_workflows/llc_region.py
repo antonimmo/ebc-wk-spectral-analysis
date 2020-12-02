@@ -1,5 +1,6 @@
 import logging
 import numpy as np
+from multiprocessing import Pool
 #
 from ..common_vars.directories import LUIGI_OUT_FOLDER
 from ..common_vars.time_slices import idx_t
@@ -38,6 +39,7 @@ class LLCRegion():
 
 
   def _var4IdTs(self, var_name, t_idx, Z_idx):
+    print(var_name,t_idx,)
     fname_hf = uv_fname_fmt.format(self.__regionId, self.__timeRes, var_name, Z_idx, t_idx)
     v = np.load(fname_hf)["uv"]
 
@@ -45,14 +47,14 @@ class LLCRegion():
 
 
   def varForId(self, var_name, Z_idx=0, t_firstaxis=False):
+    # Create empty matrix
+    shape_uv = self.__grid.f.shape
+    shape = (shape_uv[0], shape_uv[1], len(self.__timeVec))
+    logging.info("Loading {}: shape (k={}): {}".format(var_name, Z_idx, shape))
+    V = np.zeros(shape)
+    
     for idx,t in enumerate(self.__timeVec):
       V_ = self._var4IdTs(var_name, t, Z_idx)
-      if idx==0:
-        logging.debug("{},{}".format(id, t))
-        shape_uv = V_.shape
-        shape = (shape_uv[0], shape_uv[1], len(self.__timeVec))
-        logging.info("Loading {}: shape (k={}): {}".format(var_name, Z_idx, shape))
-        V = np.zeros(shape)
       V[:,:,idx] = V_
 
     if t_firstaxis:
