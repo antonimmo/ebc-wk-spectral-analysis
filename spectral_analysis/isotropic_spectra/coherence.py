@@ -1,4 +1,4 @@
-def cospectrum(A,B,d1,d2,d3):
+def coherence_ab(A,B,d1,d2,d3):
     import numpy as np
     l1,l2,l3 = A.shape
     df1 = 1./(l1*d1)
@@ -49,4 +49,4 @@ def cospectrum(A,B,d1,d2,d3):
     A = np.fft.fftshift(A,axes=(0,1))
     B = B/((l1*l2*l3)**2)/(df1*df2*df3)
     B = np.fft.fftshift(B,axes=(0,1))
-    return A,B,cs,coh,f1,f2,f3,df1,df2,df3
+    return coh,f1,f2,f3,df1,df2,df3

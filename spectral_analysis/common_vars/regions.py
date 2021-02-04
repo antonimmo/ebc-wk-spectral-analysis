@@ -8,12 +8,18 @@ ids_Kuro = [733, 751, 796]
 
 all_ids = ids_Cal+ids_Can+ids_Peru+ids_Ben
 
+#ids_regions = {
+#    "California": list(reversed(ids_Cal)),
+#    "Canarias": list(reversed(ids_Can)),
+#    "Peru": list(reversed(ids_Peru)),
+#    "Benguela": list(reversed(ids_Ben)),
+#    "Kuroshio": list(reversed(ids_Kuro))
+#}
 ids_regions = {
-    "California": list(reversed(ids_Cal)),
-    "Canarias": list(reversed(ids_Can)),
-    "Peru": list(reversed(ids_Peru)),
-    "Benguela": list(reversed(ids_Ben)),
-    "Kuroshio": list(reversed(ids_Kuro))
+    "California": [762, 868],
+    "Canarias": [750],
+    "Peru": [450, 572],
+    "Benguela": [533]
 }
 
 faces_regions = {

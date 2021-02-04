@@ -1,33 +1,78 @@
+import os
 import logging
 import numpy as np
+from uuid import uuid4
 from multiprocessing import Pool
 #
-from ..common_vars.directories import LUIGI_OUT_FOLDER
+from ..common_vars.directories import LUIGI_OUT_FOLDER,POSTPROCESS_OUT_FOLDER
 from ..common_vars.time_slices import idx_t
 from ..common_vars.regions import face4id
 from .output import VorticityGrid
+# Spectral analysis
+from ..isotropic_spectra.isotropic import calc_ispec
+from ..isotropic_spectra.co_spec import cospec_ab
+from ..isotropic_spectra.coherence import coherence_ab
 
 ## PATHS
 ds_path_fmt = LUIGI_OUT_FOLDER+"/Datasets_compressed/{}/{}"
 dxdy_fname_fmt = LUIGI_OUT_FOLDER+"/Datasets_compressed/{}/{}/{}.txt"
 uv_fname_fmt = LUIGI_OUT_FOLDER+"/Datasets_compressed/{0}/{1}/{2}{3:02d}_{4:05d}.npz"
+spectra_folder= POSTPROCESS_OUT_FOLDER+"/wk_spectra"
+spectra_fn_fmt = "{folder}/{id}{tag}_{t_res}.npz"
+
+##
+def _var4IdTs(regionId, var_name, t_idx_model, Z_idx, timeRes, threadId):
+  #print(var_name,t_idx,)
+  fname_hf = uv_fname_fmt.format(regionId, timeRes, var_name, Z_idx, t_idx_model)
+  v = np.load(fname_hf)["uv"]
+
+  return v
+
+## Aux function to load vars in parallel (duh!)
+## ThreadId is only here to avoid function signature collision
+def _varLoader(xyshape, regionId, var_name, t_slice, Z_idx, timeRes, threadId):
+  # Create empty matrix
+  shape = (xyshape[0], xyshape[1], len(t_slice))
+  V = np.zeros(shape)
+  logging.debug("Loading {} (thread: {}): shape (k={}): {}".format(var_name, threadId, Z_idx, shape))
+
+  for idx,t in enumerate(t_slice):
+    V_ = _var4IdTs(regionId, var_name, t, Z_idx, timeRes, threadId)
+    V[:,:,idx] = V_
+        
+  return V
+
 
 class LLCRegion():
   __vars = None
   __grid = None
   __regionId = None
   __timeRes = None
+  __tag = None
   __timeVec = None
   __face = None
+  __threads = 4
+  __dt = None
+  __dxAvg = None
+  __dyAvg = None
+  __spectra = None
 
-
-  def __init__(self, rid, timeVec, t_res="hours"):
+  def __init__(self, rid, timeVec, tag=None, t_res="hours", threads=4):
     self.__vars = {}
     self.__regionId = rid
     self.__timeRes = t_res
     self.__timeVec = timeVec
+    self.__tag = "" if tag is None else "_{}".format(tag)
     self.__face = face4id[rid]
     self.__grid = VorticityGrid(rid, t_res)
+    self.__threads = threads
+    self.__dt = 1 if t_res=="hours" else 24
+    self.__dxAvg = np.mean(self.__grid.dxg)/1000
+    self.__dyAvg = np.mean(self.__grid.dyg)/1000
+    logging.info("Grid: dx = {} km, dy = {} km, dt = {} h".format(self.__dxAvg, self.__dyAvg, self.__dt))
+    self.__spectra = dict(self.load_spectra()) if self.spectra_exists() else dict({})
+    spec_vars = [k for k in self.__spectra.keys()]
+    logging.info("Spectra - Variables: {}".format(spec_vars))
 
 
   def getGridC(self):
@@ -38,14 +83,6 @@ class LLCRegion():
     return self.__grid.xyg
 
 
-  def _var4IdTs(self, var_name, t_idx, Z_idx):
-    print(var_name,t_idx,)
-    fname_hf = uv_fname_fmt.format(self.__regionId, self.__timeRes, var_name, Z_idx, t_idx)
-    v = np.load(fname_hf)["uv"]
-
-    return v
-
-
   def varForId(self, var_name, Z_idx=0, t_firstaxis=False):
     # Create empty matrix
     shape_uv = self.__grid.f.shape
@@ -53,10 +90,15 @@ class LLCRegion():
     logging.info("Loading {}: shape (k={}): {}".format(var_name, Z_idx, shape))
     V = np.zeros(shape)
     
-    for idx,t in enumerate(self.__timeVec):
-      V_ = self._var4IdTs(var_name, t, Z_idx)
-      V[:,:,idx] = V_
-
+    nLoaders = self.__threads
+    with Pool(nLoaders) as pool:
+      args = [(shape_uv, self.__regionId, var_name, self.__timeVec[ii::nLoaders], Z_idx, self.__timeRes, uuid4()) for ii in range(nLoaders)]
+      res = [pool.apply_async(_varLoader, a) for a in args]
+      for ii,r in enumerate(res):
+        logging.debug("Get result {} - {}/{}".format(var_name, ii, nLoaders))
+        V[:,:,ii::nLoaders] = r.get()
+        logging.debug("Got result {} - {}/{}".format(var_name, ii, nLoaders))
+    
     if t_firstaxis:
       V = np.moveaxis(V, -1, 0)
 
@@ -103,3 +145,118 @@ class LLCRegion():
     rot = self.__grid.rv(np.moveaxis(xVec, -1, 0), np.moveaxis(yVec, -1, 0))
     self.__vars[out_var_name] = np.moveaxis(rot, 0, -1)
 
+
+  ##Spectral analysis
+  def get_spectrum(self, spectrum_name):
+    return self.__spectra[spectrum_name]
+  
+  def get_spectra_names(self):
+    return self.__spectra.keys()
+  
+  def _cospectrum(self, A, B):
+    return cospec_ab(A, B, self.__dxAvg, self.__dyAvg, self.__dt)
+  
+  def _coh(self, A, B):
+    return coherence_ab(A, B, self.__dxAvg, self.__dyAvg, self.__dt)
+  
+  def power_spectrum_1d(self, var_name, spectrum_name):
+    if spectrum_name in self.__spectra.keys():
+      logging.info("Spectrum {} already there".format(spectrum_name))
+    else:
+      logging.info("Calculating {} = FFT_pow({})".format(spectrum_name, var_name))
+      hasVar = var_name in self.__vars.keys()
+      V = self.__vars[var_name] if hasVar else self.load_scalar(var_name)
+      powSpec, kx, ky, omega, dkx, dky, domega = self._cospectrum(V, V)
+      kiso, powSpec_iso = calc_ispec(powSpec, kx, ky, omega)
+      self.__spectra["k_h"] = kiso
+      self.__spectra["om"] = omega
+      self.__spectra[spectrum_name] = powSpec_iso
+      logging.info("Saved {}({}). min: {}, max: {}".format(spectrum_name, self.__spectra[spectrum_name].shape, np.min(self.__spectra[spectrum_name]), np.max(self.__spectra[spectrum_name])))
+
+
+  def power_spectrum_2d(self, var_name, spectrum_name):
+    if spectrum_name in self.__spectra.keys():
+      logging.info("Spectrum {} already there".format(spectrum_name))
+    else:
+      logging.info("Calculating {0} = FFT_pow({1}_x) + FFT_pow({1}_y)".format(spectrum_name, var_name))
+      hasVec = var_name in self.__vars.keys()
+      if not hasVec:
+        logging.warn("First load vector into {} -- Vars: {}".format(var_name, self.__vars.keys()))
+        return
+      Vx, Vy = self.__vars[var_name]
+      powSpecX, kx, ky, omega, dkx, dky, domega = self._cospectrum(Vx, Vx)
+      powSpecY, kx, ky, omega, dkx, dky, domega = self._cospectrum(Vy, Vy)
+      kiso, powSpecX_iso = calc_ispec(powSpecX, kx, ky, omega)
+      kiso, powSpecY_iso = calc_ispec(powSpecX, kx, ky, omega)
+      self.__spectra["k_h"] = kiso
+      self.__spectra["om"] = omega
+      self.__spectra["{}_x".format(spectrum_name)] = powSpecX_iso
+      self.__spectra["{}_y".format(spectrum_name)] = powSpecY_iso
+      self.__spectra[spectrum_name] = powSpecX_iso + powSpecY_iso
+      logging.info("Saved {}({}). min: {}, max: {}".format(spectrum_name, self.__spectra[spectrum_name].shape, np.min(self.__spectra[spectrum_name]), np.max(self.__spectra[spectrum_name])))
+
+      
+  def cospectrum(self, var1_name, var2_name, spectrum_name):
+    if spectrum_name in self.__spectra.keys():
+      logging.info("Spectrum {} already there".format(spectrum_name))
+    else:
+      logging.info("Calculating {} = FFT({})*FFT({})^*".format(spectrum_name, var1_name, var2_name))
+      hasVar1 = var1_name in self.__vars.keys()
+      hasVar2 = var2_name in self.__vars.keys()
+      if not (hasVar1 and hasVar2):
+        logging.warn("First load vars ({}, {}) -- Vars: {}".format(var1_name, var2_name, self.__vars.keys()))
+        return
+      A, B = self.__vars[var1_name], self.__vars[var2_name]
+      cospec, kx, ky, omega, dkx, dky, domega = self._cospectrum(A, B)
+      kiso, cospec_iso = calc_ispec(cospec, kx, ky, omega)
+      self.__spectra["k_h"] = kiso
+      self.__spectra["om"] = omega
+      self.__spectra[spectrum_name] = cospec_iso
+      logging.info("Saved {}({}). min: {}, max: {}".format(spectrum_name, self.__spectra[spectrum_name].shape, np.min(self.__spectra[spectrum_name]), np.max(self.__spectra[spectrum_name])))
+      
+  def coherence(self, var1_name, var2_name, spectrum_name):
+    if False:
+      logging.info("Spectrum {} already there".format(spectrum_name))
+    else:
+      logging.info("Calculating {} = FFT({})*FFT({})^*".format(spectrum_name, var1_name, var2_name))
+      hasVar1 = var1_name in self.__vars.keys()
+      hasVar2 = var2_name in self.__vars.keys()
+      if not (hasVar1 and hasVar2):
+        logging.warn("Please first load vars ({}, {}) -- Loaded vars: {}".format(var1_name, var2_name, self.__vars.keys()))
+        return
+      A, B = self.__vars[var1_name], self.__vars[var2_name]
+      logging.info("Calculating coh({},{})".format(var1_name,var2_name))
+      coh, kx, ky, omega, dkx, dky, domega = self._coh(A, B)
+      kiso, coh_iso = calc_ispec(coh, kx, ky, omega)
+      self.__spectra["k_h"] = kiso
+      self.__spectra["om"] = omega
+      self.__spectra[spectrum_name] = coh_iso
+      logging.info("Saved {}({}). min: {}, max: {}".format(spectrum_name, self.__spectra[spectrum_name].shape, np.min(self.__spectra[spectrum_name]), np.max(self.__spectra[spectrum_name])))
+
+
+  def spectra_exists(self):
+    spectra_fn = spectra_fn_fmt.format(folder=spectra_folder, id=self.__regionId, tag=self.__tag, t_res=self.__timeRes)
+    logging.info("Exists? {}: {} -- Filename {}".format(self.__regionId, self.__tag, spectra_fn))
+    return os.path.exists(spectra_fn)
+
+
+  def save_spectra(self):
+    spectra_fn = spectra_fn_fmt.format(folder=spectra_folder, id=self.__regionId, tag=self.__tag, t_res=self.__timeRes)
+    logging.debug("{}: {} -- Filename {}".format(self.__regionId, self.__tag, spectra_fn))
+    self.ensure_dir(spectra_fn)
+    np.savez_compressed(spectra_fn, **self.__spectra)
+    spec_vars = [k for k in self.__spectra.keys()]
+    logging.info("Saved spectra {}: {}".format(spectra_fn, spec_vars))
+
+
+  def load_spectra(self):
+    spectra_fn = spectra_fn_fmt.format(folder=spectra_folder, id=self.__regionId, tag=self.__tag, t_res=self.__timeRes)
+    logging.debug("{}: {} -- Opening {}".format(self.__regionId, self.__tag, spectra_fn))
+    return np.load(spectra_fn)
+
+
+## Tools
+  def ensure_dir(self, file_path):
+    directory = os.path.dirname(file_path)
+    if not os.path.exists(directory):
+      os.makedirs(directory)
