@@ -16,7 +16,7 @@ all_ids = ids_Cal+ids_Can+ids_Peru+ids_Ben
 #    "Kuroshio": list(reversed(ids_Kuro))
 #}
 ids_regions = {
-    "California": [762, 868],
+    "California": [762],
     "Canarias": [750],
     "Peru": [450, 572],
     "Benguela": [533]
