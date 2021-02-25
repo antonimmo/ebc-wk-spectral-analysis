@@ -121,6 +121,8 @@ class SliceArea(Task,GridMdsBase):
         # Para xmitgcm, los índices están invertidos: i=eje x (columnas), j=eje y (filas)
         j = found[0][0]
         i = found[1][0]
+        j = min(j,4320)
+        i = min(i,4230)
         return i,j
 
     def get_indexes(self):
@@ -198,9 +200,7 @@ class GetGrid(Task,GridMdsBase):
         LONg,LATg,LONc,LATc = self.get_lonlat48()
         # Las coordenadas originales (de lonlat_box) deberían ser más parecidas a las (g) -- Ver SliceArea.get_indexes()
         logging.info("Lower left corner (g) {},{}".format(LONg[min_j,min_i],LATg[min_j,min_i]))
-        logging.info("Upper right corner  (g) {},{}".format(LONg[max_j,max_i],LATg[max_j,max_i]))
-        logging.info("Lower left corner (g) {},{}".format(LONc[min_j,min_i],LATc[min_j,min_i]))
-        logging.info("Upper right corner  (g) {},{}".format(LONc[max_j,max_i],LATc[max_j,max_i]))
+        logging.info("Upper right corner  (g) {},{}".format(LONg[max_j-1,max_i-1],LATg[max_j-1,max_i-1]))
         LONg = LONg[min_j:max_j,min_i:max_i]
         LATg = LATg[min_j:max_j,min_i:max_i]
         LONc = LONc[min_j:max_j,min_i:max_i]
