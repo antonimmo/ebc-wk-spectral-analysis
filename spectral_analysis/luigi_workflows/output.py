@@ -11,6 +11,7 @@ uv_fname_fmt = LUIGI_OUT_FOLDER+"/Datasets_compressed/{0}/{1}/{2}{3:02d}_{4:05d}
 
 def theta4idt(region_id,t_idx,Z_idx,t_res="hours"):
 	fname_hf = uv_fname_fmt.format(region_id,t_res,"Theta",Z_idx,t_idx)
+	logging.trace("Loading Theta: {}".format(fname_hf))
 	hf = np.load(fname_hf)["uv"]
 	
 	return hf
@@ -37,7 +38,7 @@ def heatFlux4idt(region_id,t_idx,Z_idx,t_res="hours"):
 	
 	return hf
 
-def H4id(id,time,Z_idx=0,t_res="hours",t_firstaxis=False):
+def HF4id(id,time,Z_idx=0,t_res="hours",t_firstaxis=False):
 	for idx,t in enumerate(time):
 		HF_ = heatFlux4idt(id,t,Z_idx,t_res)
 		if idx==0:
@@ -53,6 +54,28 @@ def H4id(id,time,Z_idx=0,t_res="hours",t_firstaxis=False):
 
 	return HF
 
+def hbl4idt(region_id,t_idx,Z_idx,t_res="hours"):
+	fname_hf = uv_fname_fmt.format(region_id,t_res,"KPPhbl",Z_idx,t_idx)
+	hf = np.load(fname_hf)["uv"]
+	
+	return hf
+
+def KPPhbl4id(id,time,Z_idx=0,t_res="hours",t_firstaxis=False):
+	for idx,t in enumerate(time):
+		HF_ = hbl4idt(id,t,Z_idx,t_res)
+		if idx==0:
+			logging.debug("{},{}".format(id,t))
+			shape_uv = HF_.shape
+			shape = (shape_uv[0],shape_uv[1],len(time))
+			logging.info("KPPhbl shape (k={}): {}".format(Z_idx,shape))
+			HF = np.zeros(shape)
+		HF[:,:,idx] = HF_
+
+	if t_firstaxis:
+		HF = np.moveaxis(HF,-1,0)
+
+	return HF
+  
 
 def uv4idt(region_id,t_idx,Z_idx,t_res="hours"):
 	fname_u = uv_fname_fmt.format(region_id,t_res,"U",Z_idx,t_idx)
@@ -154,6 +177,11 @@ class VorticityGrid():
 	# Centrado en celdas g (lat_g,lon_g)
 	def rv(self,U,V):
 		return (np.gradient(self.dyc*V,axis=-1,edge_order=2) - np.gradient(self.dxc*U,axis=-2,edge_order=2))/self.rAz
+      
+    ## http://mitgcm.org/sealion/online_documents/node43.html
+	# Centrado en celdas c (lat_c,lon_c)
+	def div(self,U,V):
+		return (np.gradient(self.dyg*U,axis=-1,edge_order=2) + np.gradient(self.dxg*V,axis=-2,edge_order=2))/self.rAc
 	
 	def rv2(self,U,V):
 		return np.square(self.rv(U,V))
@@ -168,9 +196,3 @@ class VorticityGrid():
 
 	def ow(self,U,V):
 		return self.st2(U,V) - self.rv2(U,V)
-
-	## http://mitgcm.org/sealion/online_documents/node43.html
-	# Centrado en celdas c (lat_c,lon_c)
-	def div(self,U,V):
-		return (np.gradient(self.dyg*U,axis=-1,edge_order=2) + np.gradient(self.dxg*V,axis=-2,edge_order=2))/self.rAc
-

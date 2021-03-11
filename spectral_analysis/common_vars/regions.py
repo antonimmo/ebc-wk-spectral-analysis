@@ -22,12 +22,20 @@ ids_regions = {
     "Benguela": [533]
 }
 
-faces_regions = {
+faces_regions_all = {
     1: ids_Ben,
     2: ids_Can,
     7: ids_Kuro+ids_Cal2,
     10: ids_Cal1,
     11: ids_Peru
+}
+
+faces_regions = {
+    1: [533],
+    2: [750],
+    7: [],
+    10: [762],
+    11: [450,572]
 }
 
 face4id = {v:k for k,l in faces_regions.items() for v in l}
