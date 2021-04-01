@@ -1,5 +1,7 @@
 import logging
+
 import numpy as np
+
 #
 from ..common_vars.directories import LUIGI_OUT_FOLDER
 from ..common_vars.regions import face4id
@@ -11,7 +13,7 @@ uv_fname_fmt = LUIGI_OUT_FOLDER+"/Datasets_compressed/{0}/{1}/{2}{3:02d}_{4:05d}
 
 def theta4idt(region_id,t_idx,Z_idx,t_res="hours"):
 	fname_hf = uv_fname_fmt.format(region_id,t_res,"Theta",Z_idx,t_idx)
-	logging.trace("Loading Theta: {}".format(fname_hf))
+	#logging.trace("Loading Theta: {}".format(fname_hf))
 	hf = np.load(fname_hf)["uv"]
 	
 	return hf
