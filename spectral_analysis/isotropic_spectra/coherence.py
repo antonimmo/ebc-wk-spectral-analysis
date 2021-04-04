@@ -41,8 +41,9 @@ def coherence_ab(A,B,d1,d2,d3):
     # ########
     # 
     # cospectrum density
-    cs = cs/((l1*l2*l3)**2)/(df1*df2*df3)
-    cs = np.fft.fftshift(cs,axes=(0,1))
+    # cs = cs/((l1*l2*l3)**2)/(df1*df2*df3)
+    # cs = np.fft.fftshift(cs,axes=(0,1))
+
     #
     # power spectrum density
     A = A/((l1*l2*l3)**2)/(df1*df2*df3)

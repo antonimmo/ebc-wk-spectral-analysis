@@ -1,23 +1,26 @@
-import os.path
-import numpy as np
-import multiprocessing
-import luigi
 import logging
+import multiprocessing
+import os.path
+
 import geopandas as gpd
-from luigi import Task,LocalTarget,Parameter,IntParameter,FloatParameter,BoolParameter
-from luigi.scheduler import Scheduler
-from luigi.worker import Worker
-from luigi.rpc import RemoteScheduler
-from netCDF4 import Dataset
-from xmitgcm import llcreader,open_mdsdataset
-from scipy.interpolate import interp2d
 # GCP profiling
 import googlecloudprofiler
+import luigi
+import numpy as np
+from luigi import (BoolParameter, FloatParameter, IntParameter, LocalTarget,
+                   Parameter, Task)
+from luigi.rpc import RemoteScheduler
+from luigi.scheduler import Scheduler
+from luigi.worker import Worker
+from netCDF4 import Dataset
+from scipy.interpolate import interp2d
+from xmitgcm import llcreader, open_mdsdataset
+
 # Imports within the same package
-from ..common_vars.directories import LUIGI_OUT_FOLDER
-from ..common_vars.time_slices import max_iter,idx_t
+from ..common_vars.directories import (DATA_FOLDER, LUIGI_OUT_FOLDER,
+                                       MODEL_FOLDER)
 from ..common_vars.regions import faces_regions
-from ..common_vars.directories import MODEL_FOLDER,DATA_FOLDER
+from ..common_vars.time_slices import idx_t, max_iter
 
 logging.basicConfig(
     format="%(asctime)s %(levelname)-8s %(message)s",
@@ -380,4 +383,4 @@ if __name__ == "__main__":
     except (ValueError, NotImplementedError) as exc:
         print(exc)  # Handle errors here
 
-    wf_result = luigi.build([DownloadVariables(time_prefix="hours",season="ASO_ext")], **luigi_opts)
+    wf_result = luigi.build([DownloadVariables(time_prefix="hours",season="JFM_ext")]+[DownloadVariables(time_prefix="hours",season="ASO_ext")], **luigi_opts)
