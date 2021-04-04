@@ -25,7 +25,7 @@ ids_regions = {
 faces_regions_all = {
     1: ids_Ben,
     2: ids_Can,
-    7: ids_Kuro+ids_Cal2,
+    # 7: ids_Kuro+ids_Cal2,
     10: ids_Cal1,
     11: ids_Peru
 }
@@ -33,7 +33,7 @@ faces_regions_all = {
 faces_regions = {
     1: [533],
     2: [750,730],
-    7: [],
+    # 7: [],
     10: [762],
     11: [450,572]
 }
