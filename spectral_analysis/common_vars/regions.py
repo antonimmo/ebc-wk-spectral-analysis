@@ -17,7 +17,7 @@ all_ids = ids_Cal+ids_Can+ids_Peru+ids_Ben
 #}
 ids_regions = {
     "California": [762],
-    "Canarias": [750],
+    "Canarias": [750, 730],
     "Peru": [450, 572],
     "Benguela": [533]
 }

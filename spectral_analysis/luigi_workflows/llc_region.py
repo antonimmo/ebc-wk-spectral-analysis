@@ -1,17 +1,19 @@
-import os
 import logging
-import numpy as np
-from uuid import uuid4
+import os
 from multiprocessing import Pool
+from uuid import uuid4
+
+import numpy as np
+
 #
-from ..common_vars.directories import LUIGI_OUT_FOLDER,POSTPROCESS_OUT_FOLDER
-from ..common_vars.time_slices import idx_t
+from ..common_vars.directories import LUIGI_OUT_FOLDER, POSTPROCESS_OUT_FOLDER
 from ..common_vars.regions import face4id
-from .output import VorticityGrid
-# Spectral analysis
-from ..isotropic_spectra.isotropic import calc_ispec
+from ..common_vars.time_slices import idx_t
 from ..isotropic_spectra.co_spec import cospec_ab
 from ..isotropic_spectra.coherence import coherence_ab
+# Spectral analysis
+from ..isotropic_spectra.isotropic import calc_ispec
+from .output import VorticityGrid
 
 ## PATHS
 ds_path_fmt = LUIGI_OUT_FOLDER+"/Datasets_compressed/{}/{}"
@@ -74,6 +76,9 @@ class LLCRegion():
     spec_vars = [k for k in self.__spectra.keys()]
     logging.info("Spectra - Variables: {}".format(spec_vars))
 
+  def getGrid(self):
+    return self.__grid
+
 
   def getGridC(self):
     return self.__grid.xyc
@@ -105,13 +110,13 @@ class LLCRegion():
     return V
 
 
-  def loadScalar(self, var_name):
-    self.__vars[var_name] = self.varForId(var_name)
+  def loadScalar(self, var_name, Z_idx=0, t_firstaxis=False):
+    self.__vars[var_name] = self.varForId(var_name, Z_idx=Z_idx, t_firstaxis=t_firstaxis)
 
 
-  def loadHorizontalVector(self, x_var_name, y_var_name, out_var_name):
-    xVec = self.varForId(x_var_name)
-    yVec = self.varForId(y_var_name)
+  def loadHorizontalVector(self, x_var_name, y_var_name, out_var_name, Z_idx=0, t_firstaxis=False):
+    xVec = self.varForId(x_var_name, Z_idx=Z_idx, t_firstaxis=t_firstaxis)
+    yVec = self.varForId(y_var_name, Z_idx=Z_idx, t_firstaxis=t_firstaxis)
 
     # Para face>6, los vectores (U,V) están en las coordenadas "locales"
     # Ver: https://github.com/MITgcm/MITgcm/issues/248 and https://github.com/MITgcm/xmitgcm/issues/204
