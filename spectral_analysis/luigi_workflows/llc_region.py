@@ -170,7 +170,7 @@ class LLCRegion():
     else:
       logging.info("Calculating {} = FFT_pow({})".format(spectrum_name, var_name))
       hasVar = var_name in self.__vars.keys()
-      V = self.__vars[var_name] if hasVar else self.load_scalar(var_name)
+      V = self.__vars[var_name] if hasVar else self.loadScalar(var_name)
       powSpec, kx, ky, omega, dkx, dky, domega = self._cospectrum(V, V)
       kiso, powSpec_iso = calc_ispec(powSpec, kx, ky, omega)
       self.__spectra["k_h"] = kiso
