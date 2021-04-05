@@ -164,8 +164,8 @@ class LLCRegion():
   def _coh(self, A, B):
     return coherence_ab(A, B, self.__dxAvg, self.__dyAvg, self.__dt)
   
-  def power_spectrum_1d(self, var_name, spectrum_name):
-    if spectrum_name in self.__spectra.keys():
+  def power_spectrum_1d(self, var_name, spectrum_name, recalculate=False):
+    if spectrum_name in self.__spectra.keys() and not recalculate:
       logging.info("Spectrum {} already there".format(spectrum_name))
     else:
       logging.info("Calculating {} = FFT_pow({})".format(spectrum_name, var_name))
@@ -179,8 +179,8 @@ class LLCRegion():
       logging.info("Saved {}({}). min: {}, max: {}".format(spectrum_name, self.__spectra[spectrum_name].shape, np.min(self.__spectra[spectrum_name]), np.max(self.__spectra[spectrum_name])))
 
 
-  def power_spectrum_2d(self, var_name, spectrum_name):
-    if spectrum_name in self.__spectra.keys():
+  def power_spectrum_2d(self, var_name, spectrum_name, recalculate=False):
+    if spectrum_name in self.__spectra.keys() and not recalculate:
       logging.info("Spectrum {} already there".format(spectrum_name))
     else:
       logging.info("Calculating {0} = FFT_pow({1}_x) + FFT_pow({1}_y)".format(spectrum_name, var_name))
@@ -201,9 +201,9 @@ class LLCRegion():
       logging.info("Saved {}({}). min: {}, max: {}".format(spectrum_name, self.__spectra[spectrum_name].shape, np.min(self.__spectra[spectrum_name]), np.max(self.__spectra[spectrum_name])))
 
       
-  def cospectrum(self, var1_name, var2_name, spectrum_name):
-    if spectrum_name in self.__spectra.keys():
-      logging.info("Spectrum {} already there".format(spectrum_name))
+  def cospectrum(self, var1_name, var2_name, spectrum_name, recalculate=False):
+    if spectrum_name in self.__spectra.keys() and not recalculate:
+      logging.info("Cospectrum {} already there".format(spectrum_name))
     else:
       logging.info("Calculating {} = FFT({})*FFT({})^*".format(spectrum_name, var1_name, var2_name))
       hasVar1 = var1_name in self.__vars.keys()
@@ -219,9 +219,9 @@ class LLCRegion():
       self.__spectra[spectrum_name] = cospec_iso
       logging.info("Saved {}({}). min: {}, max: {}".format(spectrum_name, self.__spectra[spectrum_name].shape, np.min(self.__spectra[spectrum_name]), np.max(self.__spectra[spectrum_name])))
       
-  def coherence(self, var1_name, var2_name, spectrum_name):
-    if False:
-      logging.info("Spectrum {} already there".format(spectrum_name))
+  def coherence(self, var1_name, var2_name, spectrum_name, recalculate=False):
+    if spectrum_name in self.__spectra.keys() and not recalculate:
+      logging.info("Coherence {} already there".format(spectrum_name))
     else:
       logging.info("Calculating {} = FFT({})*FFT({})^*".format(spectrum_name, var1_name, var2_name))
       hasVar1 = var1_name in self.__vars.keys()
