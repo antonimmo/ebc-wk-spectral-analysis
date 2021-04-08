@@ -237,6 +237,20 @@ class LLCRegion():
       self.__spectra["om"] = omega
       self.__spectra[spectrum_name] = coh_iso
       logging.info("Saved {}({}). min: {}, max: {}".format(spectrum_name, self.__spectra[spectrum_name].shape, np.min(self.__spectra[spectrum_name]), np.max(self.__spectra[spectrum_name])))
+      
+  def coherence_error(self, spectrum_name, nd=1):
+    logging.info("Calculating normalized error E[{}]".format(spectrum_name))
+    coh_spec = self.__spectra[spectrum_name]
+    abs_coh = np.abs(coh_spec)
+    sqr_coh = coh_spec**2
+    self.__spectra["{}_norm_err".format(spectrum_name)] = np.sqrt(2/nd)*(1-sqr_coh)/abs_coh
+    logging.info("Saved E[{}]".format(spectrum_name))
+    
+  def coh_err_mask(self, spectrum_name, nd=1):
+    logging.info("Mask for values where 1>=2*E[{}]".format(spectrum_name))
+    norm_err = self.__spectra["{}_norm_err".format(spectrum_name)]
+    self.__spectra["{}_err_mask".format(spectrum_name)] = (2*norm_err<=1)
+    logging.info("Saved {}_err_mask".format(spectrum_name))
 
 
   def spectra_exists(self):
