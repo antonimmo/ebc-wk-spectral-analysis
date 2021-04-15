@@ -26,9 +26,11 @@ spectra_fn_fmt = "{folder}/{id}{tag}_{t_res}.npz"
 def _var4IdTs(regionId, var_name, t_idx_model, Z_idx, timeRes, threadId):
   #print(var_name,t_idx,)
   fname_hf = uv_fname_fmt.format(regionId, timeRes, var_name, Z_idx, t_idx_model)
-  v = np.load(fname_hf)["uv"]
-
-  return v
+  try:
+    return np.load(fname_hf)["uv"]
+  except Exception as err:
+    print("NP load error: {0}".format(err))
+    return np.load(fname_hf, fix_imports=True, encoding='bytes')["uv"]
 
 ## Aux function to load vars in parallel (duh!)
 ## ThreadId is only here to avoid function signature collision

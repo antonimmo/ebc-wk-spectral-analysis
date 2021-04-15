@@ -8,35 +8,36 @@ ids_Kuro = [733, 751, 796]
 
 all_ids = ids_Cal+ids_Can+ids_Peru+ids_Ben
 
-#ids_regions = {
-#    "California": list(reversed(ids_Cal)),
-#    "Canarias": list(reversed(ids_Can)),
-#    "Peru": list(reversed(ids_Peru)),
-#    "Benguela": list(reversed(ids_Ben)),
-#    "Kuroshio": list(reversed(ids_Kuro))
-#}
 ids_regions = {
-    "California": [762],
-    "Canarias": [750, 730],
-    "Peru": [450, 572],
-    "Benguela": [533]
+    "California": list(reversed(ids_Cal)),
+    "Canarias": list(reversed(ids_Can)),
+    "Peru": list(reversed(ids_Peru)),
+    "Benguela": list(reversed(ids_Ben)),
+    "Kuroshio": list(reversed(ids_Kuro))
 }
+#ids_regions = {
+#    "California": [762],
+#    "Canarias": [750, 730],
+#    "Peru": [450, 572],
+#    "Benguela": [533]
+#}
 
 faces_regions_all = {
     1: ids_Ben,
     2: ids_Can,
-    # 7: ids_Kuro+ids_Cal2,
+    7: ids_Kuro+ids_Cal2,
     10: ids_Cal1,
     11: ids_Peru
 }
 
-faces_regions = {
-    1: [533],
-    2: [750,730],
-    # 7: [],
-    10: [762],
-    11: [450,572]
-}
+#faces_regions = {
+#    1: [533],
+#    2: [750,730],
+#    7: [],
+#    10: [762],
+#    11: [450,572]
+#}
+faces_regions = faces_regions_all
 
 face4id = {v:k for k,l in faces_regions.items() for v in l}
 face4id[0] = 7 ## Todo: Delete this when I write better tests
