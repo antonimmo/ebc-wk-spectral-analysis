@@ -35,10 +35,10 @@ grid_path = "{}/LLC4320/grid/".format(MODEL_FOLDER)
 ds_path_fmt = LUIGI_OUT_FOLDER + "/Datasets_compressed/{}/{}"
 
 Omega = 2*np.pi/(24*3600) # Frecuencia de rotación terrestre
-#vars_wf = ["U","V"] # Variables del modelo
-#vars_wf = ["U","V","oceQnet","oceTAUX","oceTAUY"]
-vars_wf = ["KPPhbl","oceQnet","U","V","oceQnet","oceTAUX","oceTAUY","Theta"]
-#vars_wf = ["Eta"]
+## Variables del modelo
+#vars_wf = ["KPPhbl","oceQnet","U","V",oceTAUX","oceTAUY","Theta"]
+vars_wf = ["U","V"]
+## Profundidades
 #k_lvl_idx = [0, 36]  ## z=0 m, z=-400 m (39 para z=-500 m)
 #k_lvl_idx = [0,6,12,16,19]#,21,25 ## Para T, y quizás S
 k_lvl_idx = [0]
@@ -228,7 +228,8 @@ class GetGrid(Task,GridMdsBase):
         if self._target is None:
             self._target = [LocalTarget("{}/{}.txt".format(ds_path_fmt.format(self.area_id,self.time_prefix),var_)) \
              for var_ in ["dxg","dyg","rAz","lon_g","lat_g","dxc","dyc","rAc","lon_c","lat_c","f"]]
-            self._target[0].makedirs()
+            if self._target[0]:
+                self._target[0].makedirs()
         return self._target
 
     def run(self):
@@ -358,7 +359,7 @@ class DownloadVariables(Task):
 #n_workers = multiprocessing.cpu_count()
 
 luigi_opts = {
-    "workers": 6,
+    "workers": 2,
     "detailed_summary": False,
     "scheduler_host": "10.138.0.2", 
     "scheduler_port": 8080
@@ -383,4 +384,4 @@ if __name__ == "__main__":
     except (ValueError, NotImplementedError) as exc:
         print(exc)  # Handle errors here
 
-    wf_result = luigi.build([DownloadVariables(time_prefix="hours",season="JFM_ext")]+[DownloadVariables(time_prefix="hours",season="ASO_ext")], **luigi_opts)
+    wf_result = luigi.build([DownloadVariables(time_prefix="hours",season="JFM")]+[DownloadVariables(time_prefix="hours",season="ASO")], **luigi_opts)

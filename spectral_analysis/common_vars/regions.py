@@ -29,6 +29,7 @@ faces_regions_all = {
     10: ids_Cal1,
     11: ids_Peru
 }
+faces_regions = faces_regions_all
 
 #faces_regions = {
 #    1: [533],
@@ -37,7 +38,7 @@ faces_regions_all = {
 #    10: [762],
 #    11: [450,572]
 #}
-faces_regions = faces_regions_all
+
 
 face4id = {v:k for k,l in faces_regions.items() for v in l}
 face4id[0] = 7 ## Todo: Delete this when I write better tests

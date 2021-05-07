@@ -29,8 +29,8 @@ def _var4IdTs(regionId, var_name, t_idx_model, Z_idx, timeRes, threadId):
   try:
     return np.load(fname_hf)["uv"]
   except Exception as err:
-    print("NP load error: {0}".format(err))
-    return np.load(fname_hf, fix_imports=True, encoding='bytes')["uv"]
+    logging.warn("NP load (file: {}) error: {}".format(fname_hf, err))
+    return np.load(fname_hf, allow_pickle=True)["uv"]
 
 ## Aux function to load vars in parallel (duh!)
 ## ThreadId is only here to avoid function signature collision
@@ -102,9 +102,9 @@ class LLCRegion():
       args = [(shape_uv, self.__regionId, var_name, self.__timeVec[ii::nLoaders], Z_idx, self.__timeRes, uuid4()) for ii in range(nLoaders)]
       res = [pool.apply_async(_varLoader, a) for a in args]
       for ii,r in enumerate(res):
-        logging.debug("Get result {} - {}/{}".format(var_name, ii, nLoaders))
+        logging.debug("Geting result {} - {}/{}".format(var_name, ii+1, nLoaders))
         V[:,:,ii::nLoaders] = r.get()
-        logging.debug("Got result {} - {}/{}".format(var_name, ii, nLoaders))
+        logging.debug("Got result {} - {}/{}".format(var_name, ii+1, nLoaders))
     
     if t_firstaxis:
       V = np.moveaxis(V, -1, 0)
