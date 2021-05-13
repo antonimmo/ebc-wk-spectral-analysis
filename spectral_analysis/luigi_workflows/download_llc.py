@@ -36,8 +36,8 @@ ds_path_fmt = LUIGI_OUT_FOLDER + "/Datasets_compressed/{}/{}"
 
 Omega = 2*np.pi/(24*3600) # Frecuencia de rotación terrestre
 ## Variables del modelo
-#vars_wf = ["KPPhbl","oceQnet","U","V",oceTAUX","oceTAUY","Theta"]
-vars_wf = ["U","V"]
+vars_wf = ["KPPhbl","oceQnet","U","V","oceTAUX","oceTAUY","Theta"]
+#vars_wf = ["U","V"]
 ## Profundidades
 #k_lvl_idx = [0, 36]  ## z=0 m, z=-400 m (39 para z=-500 m)
 #k_lvl_idx = [0,6,12,16,19]#,21,25 ## Para T, y quizás S
@@ -384,4 +384,4 @@ if __name__ == "__main__":
     except (ValueError, NotImplementedError) as exc:
         print(exc)  # Handle errors here
 
-    wf_result = luigi.build([DownloadVariables(time_prefix="hours",season="JFM")]+[DownloadVariables(time_prefix="hours",season="ASO")], **luigi_opts)
+    wf_result = luigi.build([DownloadVariables(time_prefix="hours",season="JFM_ext")]+[DownloadVariables(time_prefix="hours",season="ASO_ext")], **luigi_opts)
