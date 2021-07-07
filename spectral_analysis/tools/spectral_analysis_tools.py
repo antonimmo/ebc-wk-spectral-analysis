@@ -58,7 +58,7 @@ def open_ds_kwe(fname,log=True):
 
 	# Nbv = 0.8594 cph ---> 1.5e-3 rad/s Orden "tipico" para la frecuencia de Brunt-Vaisala
 	# H: Profundidad media, en km
-def plot_wk_integrated(kiso,omega,E,lat,clim,Nbv=0.8594,H=4,wk_only=False,show_coriolis=True,show_tides=True,igw_modes=[1,2,3,4],log=True):
+def plot_wk_integrated(kiso,omega,E,lat,clim,Nbv=0.8594,H=4,wk_only=False,show_coriolis=True,show_tides=True,igw_modes=[1,2,3,4],log=True, varunits='units'):
 	##::::::::: Setting the figure :::::::::::
 	with plt.rc_context(temp_rcParams):
 		fig = plt.figure(figsize=(14,12))
@@ -70,7 +70,7 @@ def plot_wk_integrated(kiso,omega,E,lat,clim,Nbv=0.8594,H=4,wk_only=False,show_c
 		#::::::::: Frequency-Wavenumber spectrum :::::::
 		cs=plt.pcolormesh(kiso,omega,
 		              E.T*kiso[None,...]*omega[...,None],
-		             cmap='nipy_spectral_r',norm = LogNorm())
+		             cmap='gist_stern_r',norm = LogNorm())
 		plt.clim(clim)
 		ax3.set_yscale('log')
 		ax3.set_xscale('log')
@@ -82,8 +82,8 @@ def plot_wk_integrated(kiso,omega,E,lat,clim,Nbv=0.8594,H=4,wk_only=False,show_c
 		ks = np.array([1.e-3,1.])
 		# Graficamos la banda f
 		if show_coriolis:
-			ax3.plot(ks,[f,f],'w-',linewidth=3.)
-			ax3.text(1/200.,f*0.65,r'$f$',color='w',size='x-large')
+			ax3.plot(ks,[f,f],c='xkcd:pinkish',ls='-',linewidth=5.)
+			ax3.text(1/200.,f*0.65,r'$f$',color='xkcd:pinkish',size='x-large')
 		
 		# Tide constituents
 		if show_tides:
@@ -106,18 +106,18 @@ def plot_wk_integrated(kiso,omega,E,lat,clim,Nbv=0.8594,H=4,wk_only=False,show_c
 
 		# Trying to set ticks in space domain
 		#ax3.set_xlabel('Horizontal Wavenumber k [cpkm]', size=18)  # En numero de onda
-		ax3.set_xlabel('Horizontal scales [km]', size='x-large')  # En km
+		ax3.set_xlabel('Horizontal wavelength [km]', size='x-large')  # En km
 		ax3.set_xticks([1./100.,1./50.,1/25.,1/10.])
 		ax3.set_xticklabels(['100','50','25','10'], size='large')
 		fig.subplots_adjust(right=0.85)
 		cbar_ax = fig.add_axes([0.87,.11,0.01, 0.5])
 		fig.colorbar(cs, cax=cbar_ax,
-		             label=r'$K$ $\times$ $\omega$ $\times$ $\Psi(k,\omega)$ [units$^{2}$/(cpkm $\times$ cph)]')
+		             label=r'$K$ $\times$ $\omega$ $\times$ $\Psi(k,\omega)$ [{0}/(cpkm $\times$ cph)]'.format(varunits))
 
 		if wk_only:
 			ax3.set_yticks([1./4., 1./12., 1./24., 1./240.])
 			ax3.set_yticklabels(['4 h','12 h','1 d','10 d'], size='medium')
-			ax3.set_ylabel('Time scales',size='x-large')
+			ax3.set_ylabel('Period',size='x-large')
 		else:
 			#### :::::: Frequency spectrum :::::::::::
 			dk = kiso[1]
@@ -236,7 +236,7 @@ def get_clim(var):
 
 	return clim
 
-def plot_wk_forvar(fname,var,plot_igw_bm=False,Nbv=0.8594,H=4,wk_only=False,show_coriolis=True,show_tides=True,igw_modes=None,log=True):
+def plot_wk_forvar(fname,var,plot_igw_bm=False,Nbv=0.8594,H=4,wk_only=False,show_coriolis=True,show_tides=True,igw_modes=None,log=True, varunits='units'):
 	#:::::::::::::::: Plot ::::::::::::::::
 	clim = get_clim(var)
 	kiso,omega,E = open_ds_kwe(fname,log)
@@ -245,11 +245,11 @@ def plot_wk_forvar(fname,var,plot_igw_bm=False,Nbv=0.8594,H=4,wk_only=False,show
 	lat,lon,id = get_latlonid(fname)
 	if log:
 		print("Lat = {}".format(lat))
-	plot_wk_integrated(kiso,omega,E,lat,clim,Nbv=Nbv,H=H,wk_only=wk_only,show_coriolis=show_coriolis,show_tides=show_tides,igw_modes=igw_modes,log=log)
+	plot_wk_integrated(kiso,omega,E,lat,clim,Nbv=Nbv,H=H,wk_only=wk_only,show_coriolis=show_coriolis,show_tides=show_tides,igw_modes=igw_modes,log=log, varunits=varunits)
 	if plot_igw_bm:
 		plot_bm_igw_k(kiso,omega,E,lat,Nbv=Nbv,H=H,log=log)
 
-def plot_wk_forseasonvarid(prnt_folder,season,var,id,Nbv=0.8594,H=4,wk_only=False,show_coriolis=True,show_tides=True,igw_modes=None,log=True):
+def plot_wk_forseasonvarid(prnt_folder,season,var,id,Nbv=0.8594,H=4,wk_only=False,show_coriolis=True,show_tides=True,igw_modes=None,log=True, varunits='units'):
 	with open("{}/spectra/db/all_{}_{}.json".format(prnt_folder,season,var),'r') as f:
 		data = json.load(f)
 	s_id = str(id)
@@ -257,7 +257,7 @@ def plot_wk_forseasonvarid(prnt_folder,season,var,id,Nbv=0.8594,H=4,wk_only=Fals
 	#lon = data[s_id]['lon']
 	fname_ = data[s_id]['fname']
 	fname = "{}/spectra/{}/{}/{}".format(prnt_folder,season,var,fname_)
-	plot_wk_forvar(fname,var,Nbv=Nbv,H=H,wk_only=wk_only,show_coriolis=show_coriolis,show_tides=show_tides,igw_modes=igw_modes,log=log)
+	plot_wk_forvar(fname,var,Nbv=Nbv,H=H,wk_only=wk_only,show_coriolis=show_coriolis,show_tides=show_tides,igw_modes=igw_modes,log=log, varunits=varunits)
 
 
 def find_closest_idx(np_arr,val):
