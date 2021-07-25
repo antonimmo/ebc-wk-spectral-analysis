@@ -61,11 +61,14 @@ def open_ds_kwe(fname,log=True):
 def plot_wk_integrated(kiso,omega,E,lat,clim,Nbv=0.8594,H=4,wk_only=False,show_coriolis=True,show_tides=True,igw_modes=[1,2,3,4],log=True, varunits='units'):
 	##::::::::: Setting the figure :::::::::::
 	with plt.rc_context(temp_rcParams):
-		fig = plt.figure(figsize=(14,12))
-		if not wk_only:
+		if wk_only:
+			fig = plt.figure(figsize=(11,8))
+			ax3 = plt.gca()
+		else:
+			fig = plt.figure(figsize=(14,12))
 			ax1 = plt.subplot2grid((3,3),(0,1),colspan=2)
 			ax2 = plt.subplot2grid((3,3),(1,0),rowspan=2)
-		ax3 = plt.subplot2grid((3,3),(1,1),rowspan=2, colspan=2)
+			ax3 = plt.subplot2grid((3,3),(1,1),rowspan=2, colspan=2)
 
 		#::::::::: Frequency-Wavenumber spectrum :::::::
 		cs=plt.pcolormesh(kiso,omega,
@@ -110,9 +113,12 @@ def plot_wk_integrated(kiso,omega,E,lat,clim,Nbv=0.8594,H=4,wk_only=False,show_c
 		ax3.set_xticks([1./100.,1./50.,1/25.,1/10.])
 		ax3.set_xticklabels(['100','50','25','10'], size='large')
 		fig.subplots_adjust(right=0.85)
-		cbar_ax = fig.add_axes([0.87,.11,0.01, 0.5])
-		fig.colorbar(cs, cax=cbar_ax,
-		             label=r'$K$ $\times$ $\omega$ $\times$ $\Psi(k,\omega)$ [{0}/(cpkm $\times$ cph)]'.format(varunits))
+		
+		if wk_only:
+			cbar_ax = fig.add_axes([0.87,.15,0.01, 0.68])
+		else:
+			cbar_ax = fig.add_axes([0.87,.11,0.01, 0.5])
+		fig.colorbar(cs, cax=cbar_ax, label=r'$^|\Psi(k,\omega)|^2$ [{0}/(cpkm $\times$ cph)]'.format(varunits))
 
 		if wk_only:
 			ax3.set_yticks([1./4., 1./12., 1./24., 1./240.])
@@ -147,6 +153,7 @@ def plot_wk_integrated(kiso,omega,E,lat,clim,Nbv=0.8594,H=4,wk_only=False,show_c
 			ax1a.set_xticklabels(['100','50','10'])
 
 		plt.show()
+		return fig
 
 def calc_bm_igw_k(kh,omega,E,lat,Nbv=0.8594,H=4,log=True):
 	f = coriolis(lat)
@@ -245,9 +252,10 @@ def plot_wk_forvar(fname,var,plot_igw_bm=False,Nbv=0.8594,H=4,wk_only=False,show
 	lat,lon,id = get_latlonid(fname)
 	if log:
 		print("Lat = {}".format(lat))
-	plot_wk_integrated(kiso,omega,E,lat,clim,Nbv=Nbv,H=H,wk_only=wk_only,show_coriolis=show_coriolis,show_tides=show_tides,igw_modes=igw_modes,log=log, varunits=varunits)
+	fig = plot_wk_integrated(kiso,omega,E,lat,clim,Nbv=Nbv,H=H,wk_only=wk_only,show_coriolis=show_coriolis,show_tides=show_tides,igw_modes=igw_modes,log=log, varunits=varunits)
 	if plot_igw_bm:
 		plot_bm_igw_k(kiso,omega,E,lat,Nbv=Nbv,H=H,log=log)
+	return fig
 
 def plot_wk_forseasonvarid(prnt_folder,season,var,id,Nbv=0.8594,H=4,wk_only=False,show_coriolis=True,show_tides=True,igw_modes=None,log=True, varunits='units'):
 	with open("{}/spectra/db/all_{}_{}.json".format(prnt_folder,season,var),'r') as f:
@@ -257,7 +265,7 @@ def plot_wk_forseasonvarid(prnt_folder,season,var,id,Nbv=0.8594,H=4,wk_only=Fals
 	#lon = data[s_id]['lon']
 	fname_ = data[s_id]['fname']
 	fname = "{}/spectra/{}/{}/{}".format(prnt_folder,season,var,fname_)
-	plot_wk_forvar(fname,var,Nbv=Nbv,H=H,wk_only=wk_only,show_coriolis=show_coriolis,show_tides=show_tides,igw_modes=igw_modes,log=log, varunits=varunits)
+	return plot_wk_forvar(fname,var,Nbv=Nbv,H=H,wk_only=wk_only,show_coriolis=show_coriolis,show_tides=show_tides,igw_modes=igw_modes,log=log, varunits=varunits)
 
 
 def find_closest_idx(np_arr,val):
