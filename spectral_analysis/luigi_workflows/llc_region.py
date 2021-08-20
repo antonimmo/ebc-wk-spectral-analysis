@@ -13,7 +13,10 @@ from ..isotropic_spectra.co_spec import cospec_ab
 from ..isotropic_spectra.coherence import coherence_ab
 # Spectral analysis
 from ..isotropic_spectra.isotropic import calc_ispec
-from .output import VorticityGrid
+
+from importlib import reload
+from ..luigi_workflows.output import VorticityGrid
+#reload(VorticityGrid)
 
 ## PATHS
 ds_path_fmt = LUIGI_OUT_FOLDER+"/Datasets_compressed/{}/{}"
@@ -83,11 +86,11 @@ class LLCRegion():
 
 
   def getGridC(self):
-    return self.__grid.xyc
+    return self.__grid.xyc()
 
 
   def getGridG(self):
-    return self.__grid.xyg
+    return self.__grid.xyg()
 
 
   def varForId(self, var_name, Z_idx=0, t_firstaxis=False):
@@ -113,20 +116,46 @@ class LLCRegion():
 
 
   def loadScalar(self, var_name, Z_idx=0, t_firstaxis=False):
-    self.__vars[var_name] = self.varForId(var_name, Z_idx=Z_idx, t_firstaxis=t_firstaxis)
+    try:
+        self.__vars[var_name]
+    except KeyError:
+        self.__vars[var_name] = self.varForId(var_name, Z_idx=Z_idx, t_firstaxis=t_firstaxis)
 
 
   def loadHorizontalVector(self, x_var_name, y_var_name, out_var_name, Z_idx=0, t_firstaxis=False):
+    try:
+        self.__vars[out_var_name]
+    except KeyError:
+        xVec = self.varForId(x_var_name, Z_idx=Z_idx, t_firstaxis=t_firstaxis)
+        yVec = self.varForId(y_var_name, Z_idx=Z_idx, t_firstaxis=t_firstaxis)
+
+        # Para face>6, los vectores (U,V) están en las coordenadas "locales"
+        # Ver: https://github.com/MITgcm/MITgcm/issues/248 and https://github.com/MITgcm/xmitgcm/issues/204
+        if self.__face>6:
+           xVec,yVec = yVec,-1*xVec
+    
+        self.__vars[out_var_name] = (xVec, yVec)
+
+
+  def load3DVector(self, x_var_name, y_var_name, z_var_name, out_var_name, Z_idx=0, t_firstaxis=False):
     xVec = self.varForId(x_var_name, Z_idx=Z_idx, t_firstaxis=t_firstaxis)
     yVec = self.varForId(y_var_name, Z_idx=Z_idx, t_firstaxis=t_firstaxis)
+    zVec = self.varForId(z_var_name, Z_idx=Z_idx, t_firstaxis=t_firstaxis)
 
     # Para face>6, los vectores (U,V) están en las coordenadas "locales"
     # Ver: https://github.com/MITgcm/MITgcm/issues/248 and https://github.com/MITgcm/xmitgcm/issues/204
-    
     if self.__face>6:
        xVec,yVec = yVec,-1*xVec
     
-    self.__vars[out_var_name] = (xVec, yVec)
+    self.__vars[out_var_name] = (xVec, yVec, zVec)
+
+
+  def get_uv(self, Z_idx=0, t_firstaxis=False):
+    self.loadHorizontalVector("U", "V", "uv", Z_idx, t_firstaxis)
+
+
+  def get_uvw(self, Z_idx=0, t_firstaxis=False):
+    self.load3DVector("U", "V", "W", "uvw", Z_idx, t_firstaxis)
 
 
   def get(self, var_name):
@@ -153,19 +182,35 @@ class LLCRegion():
     self.__vars[out_var_name] = np.moveaxis(rot, 0, -1)
 
 
+  def adv_2d(self, out_var_name):
+    self.loadScalar("U")
+    self.loadScalar("V")
+    logging.info("Calculating {0}_x + {0}_y = (u*grad_x){0} + (v*grad_y){0}".format(out_var_name))
+    u,v = self.get("U"), self.get("V")
+    U,V = np.moveaxis(u, -1, 0), np.moveaxis(v, -1, 0)
+    advU, advV = self.__grid.adv_2d(U,V,U), self.__grid.adv_2d(U,V,V)
+    self.__vars[out_var_name+"_x"] = np.moveaxis(advU, 0, -1)
+    self.__vars[out_var_name+"_y"] = np.moveaxis(advV, 0, -1)
+    return advU, advV
+
+
   ##Spectral analysis
   def get_spectrum(self, spectrum_name):
     return self.__spectra[spectrum_name]
-  
+
+
   def get_spectra_names(self):
     return self.__spectra.keys()
-  
+
+
   def _cospectrum(self, A, B):
     return cospec_ab(A, B, self.__dxAvg, self.__dyAvg, self.__dt)
-  
+
+
   def _coh(self, A, B):
     return coherence_ab(A, B, self.__dxAvg, self.__dyAvg, self.__dt)
-  
+
+
   def power_spectrum_1d(self, var_name, spectrum_name, recalculate=False):
     if spectrum_name in self.__spectra.keys() and not recalculate:
       logging.info("Spectrum {} already there".format(spectrum_name))
@@ -188,7 +233,7 @@ class LLCRegion():
       logging.info("Calculating {0} = FFT_pow({1}_x) + FFT_pow({1}_y)".format(spectrum_name, var_name))
       hasVec = var_name in self.__vars.keys()
       if not hasVec:
-        logging.warn("First load vector into {} -- Vars: {}".format(var_name, self.__vars.keys()))
+        logging.error("First load vector into {} -- Vars: {}".format(var_name, self.__vars.keys()))
         return
       Vx, Vy = self.__vars[var_name]
       powSpecX, kx, ky, omega, dkx, dky, domega = self._cospectrum(Vx, Vx)
@@ -202,7 +247,7 @@ class LLCRegion():
       self.__spectra[spectrum_name] = powSpecX_iso + powSpecY_iso
       logging.info("Saved {}({}). min: {}, max: {}".format(spectrum_name, self.__spectra[spectrum_name].shape, np.min(self.__spectra[spectrum_name]), np.max(self.__spectra[spectrum_name])))
 
-      
+
   def cospectrum(self, var1_name, var2_name, spectrum_name, recalculate=False):
     if spectrum_name in self.__spectra.keys() and not recalculate:
       logging.info("Cospectrum {} already there".format(spectrum_name))
@@ -211,7 +256,7 @@ class LLCRegion():
       hasVar1 = var1_name in self.__vars.keys()
       hasVar2 = var2_name in self.__vars.keys()
       if not (hasVar1 and hasVar2):
-        logging.warn("First load vars ({}, {}) -- Vars: {}".format(var1_name, var2_name, self.__vars.keys()))
+        logging.error("First load vars ({}, {}) -- Vars: {}".format(var1_name, var2_name, self.__vars.keys()))
         return
       A, B = self.__vars[var1_name], self.__vars[var2_name]
       cospec, kx, ky, omega, dkx, dky, domega = self._cospectrum(A, B)
@@ -220,7 +265,8 @@ class LLCRegion():
       self.__spectra["om"] = omega
       self.__spectra[spectrum_name] = cospec_iso
       logging.info("Saved {}({}). min: {}, max: {}".format(spectrum_name, self.__spectra[spectrum_name].shape, np.min(self.__spectra[spectrum_name]), np.max(self.__spectra[spectrum_name])))
-      
+
+
   def coherence(self, var1_name, var2_name, spectrum_name, recalculate=False):
     if spectrum_name in self.__spectra.keys() and not recalculate:
       logging.info("Coherence {} already there".format(spectrum_name))

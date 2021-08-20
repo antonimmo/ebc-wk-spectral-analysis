@@ -177,21 +177,25 @@ class VorticityGrid():
 	
 	## http://mitgcm.org/sealion/online_documents/node61.html
 	# Centrado en celdas g (lat_g,lon_g)
-	def rv(self,U,V):
+	def rv(self, U, V):
 		return (np.gradient(self.dyc*V,axis=-1,edge_order=2) - np.gradient(self.dxc*U,axis=-2,edge_order=2))/self.rAz
       
     ## http://mitgcm.org/sealion/online_documents/node43.html
 	# Centrado en celdas c (lat_c,lon_c)
-	def div(self,U,V):
+	def div(self, U, V):
 		return (np.gradient(self.dyg*U,axis=-1,edge_order=2) + np.gradient(self.dxg*V,axis=-2,edge_order=2))/self.rAc
+
+	## Horizontal Advection 
+	def adv_2d(self, U, V, F):
+		return (np.gradient(U*self.dyg*F,axis=-1,edge_order=2) + np.gradient(V*self.dxg*F,axis=-2,edge_order=2))/self.rAz
 	
-	def rv2(self,U,V):
+	def rv2(self, U, V):
 		return np.square(self.rv(U,V))
 
-	def st(self,U,V):
+	def st(self, U, V):
 		return np.sqrt(self.st2(U,V))
 
-	def st2(self,U,V):
+	def st2(self, U, V):
 		ss = (np.gradient(self.dyc*V,axis=-1,edge_order=2) + np.gradient(self.dxc*U,axis=-2,edge_order=2))/self.rAz
 		sn = (np.gradient(self.dyc*U,axis=-1,edge_order=2) - np.gradient(self.dxc*V,axis=-2,edge_order=2))/self.rAz
 		return np.square(sn) + np.square(ss)
