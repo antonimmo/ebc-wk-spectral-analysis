@@ -162,6 +162,10 @@ class LLCRegion():
     return self.__vars[var_name]
 
 
+  def set(self, var_, var_name):
+    self.__vars[var_name] = var_
+
+
   def norm(self, vec_var_name, out_var_name):
     logging.info("Calculating {} = |{}|".format(out_var_name, vec_var_name))
     xVec,yVec = self.get(vec_var_name)
@@ -182,15 +186,23 @@ class LLCRegion():
     self.__vars[out_var_name] = np.moveaxis(rot, 0, -1)
 
 
-  def adv_2d(self, out_var_name, t_firstaxis=False):
-    self.loadScalar("U")
-    self.loadScalar("V")
-    logging.info("Calculating {0}_x + {0}_y = (u*grad_x){0} + (v*grad_y){0}".format(out_var_name))
-    U,V = self.get("U"), self.get("V")
-    advU, advV = self.__grid.adv_2d(U,V,U,t_firstaxis=t_firstaxis), self.__grid.adv_2d(U,V,V,t_firstaxis=t_firstaxis)
-    self.__vars[out_var_name+"_x"] = advU
-    self.__vars[out_var_name+"_y"] = advV
-    return advU, advV
+  def adv_2d(self, out_var_name, uName="U", vName="V", fxName="U", fyName="V", t_firstaxis=False):
+    advxName = out_var_name+"_x"
+    advyName = out_var_name+"_y"
+    if (advxName in self.__vars.keys()) and (advyName in self.__vars.keys()):
+      logging.info("({0},{1}) already there!".format(advxName,advyName))
+      return self.__vars[advxName], self.__vars[advyName]
+    else:
+      self.loadScalar(uName)
+      self.loadScalar(vName)
+      U,V = self.get(uName), self.get(vName)
+      logging.info("Calculating {0} = ({1}*grad_x){3} + ({2}*grad_y){3}".format(advxName,uName,vName,fxName))
+      advU = self.__grid.adv_2d(U,V,U,t_firstaxis=t_firstaxis)
+      logging.info("Calculating {0} = ({1}*grad_x){3} + ({2}*grad_y){3}".format(advyName,uName,vName,fyName))
+      advV = self.__grid.adv_2d(U,V,V,t_firstaxis=t_firstaxis)
+      self.__vars[advxName] = advU
+      self.__vars[advyName] = advV
+      return advU, advV
 
 
   ##Spectral analysis

@@ -89,7 +89,8 @@ def filter_fft_butterworth_kh(var_xy,Lt_km=50,dx=2,dy=2,order=100):
     return var_lo,var_hi
 
 
-def filter_fft_butterworth_omega(var_txy,cuttoff_h=30,dt_h=1,order=100,axis=0):
+def filter_fft_butterworth_omega(var_txy,cuttoff_h=30,dt_h=1,order=100,axis=-1):
+    logging.info("omega BW -- shape: {}".format(var_txy.shape))
     var_om = np.fft.fft(var_txy, axis=axis) # fft en el tiempo (primer axis)
     
     filter_mask = create_filter_om(var_txy.shape[axis], cuttoff_h=cuttoff_h, dt_h=dt_h, order=order, flip=True)
@@ -97,7 +98,7 @@ def filter_fft_butterworth_omega(var_txy,cuttoff_h=30,dt_h=1,order=100,axis=0):
     # El cálculo de la inversa se hará sobre la variable a la que no se le aplica fftshift,
     # ya que np.flipup y np.fliplr no conmutan con fftshift
     var_om_lo = var_om*filter_mask
-    _var_lo = np.fft.ifft(var_k_lo,axis=axis)
+    _var_lo = np.fft.ifft(var_om_lo,axis=axis)
     
     # Eliminamos la parte imaginaria, ya que es espuria
     var_lo = np.real(_var_lo)
