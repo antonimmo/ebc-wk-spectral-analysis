@@ -186,8 +186,15 @@ class VorticityGrid():
 		return (np.gradient(self.dyg*U,axis=-1,edge_order=2) + np.gradient(self.dxg*V,axis=-2,edge_order=2))/self.rAc
 
 	## Horizontal Advection 
-	def adv_2d(self, U, V, F):
-		return (np.gradient(U*self.dyg*F,axis=-1,edge_order=2) + np.gradient(V*self.dxg*F,axis=-2,edge_order=2))/self.rAz
+	def adv_2d(self, U, V, F, t_firstaxis=False):
+		if not t_firstaxis:
+			U,V,F = np.moveaxis(U, -1, 0), np.moveaxis(V, -1, 0), np.moveaxis(F, -1, 0)
+      
+		adv = (np.gradient(U*self.dyg*F,axis=-1,edge_order=2) + np.gradient(V*self.dxg*F,axis=-2,edge_order=2))/self.rAz
+		if not t_firstaxis:
+			adv = np.moveaxis(adv, 0, -1)
+            
+		return adv
 	
 	def rv2(self, U, V):
 		return np.square(self.rv(U,V))

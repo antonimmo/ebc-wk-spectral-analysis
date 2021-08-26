@@ -182,15 +182,14 @@ class LLCRegion():
     self.__vars[out_var_name] = np.moveaxis(rot, 0, -1)
 
 
-  def adv_2d(self, out_var_name):
+  def adv_2d(self, out_var_name, t_firstaxis=False):
     self.loadScalar("U")
     self.loadScalar("V")
     logging.info("Calculating {0}_x + {0}_y = (u*grad_x){0} + (v*grad_y){0}".format(out_var_name))
-    u,v = self.get("U"), self.get("V")
-    U,V = np.moveaxis(u, -1, 0), np.moveaxis(v, -1, 0)
-    advU, advV = self.__grid.adv_2d(U,V,U), self.__grid.adv_2d(U,V,V)
-    self.__vars[out_var_name+"_x"] = np.moveaxis(advU, 0, -1)
-    self.__vars[out_var_name+"_y"] = np.moveaxis(advV, 0, -1)
+    U,V = self.get("U"), self.get("V")
+    advU, advV = self.__grid.adv_2d(U,V,U,t_firstaxis=t_firstaxis), self.__grid.adv_2d(U,V,V,t_firstaxis=t_firstaxis)
+    self.__vars[out_var_name+"_x"] = advU
+    self.__vars[out_var_name+"_y"] = advV
     return advU, advV
 
 
