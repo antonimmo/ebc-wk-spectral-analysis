@@ -33,6 +33,8 @@ M2 = 1./12.4
 MK3 = 1./8.17
 M4 = 1./6.21
 M6 = 1./4.14
+O1 = 1./24.833
+K1 = 1./24.0
 
 def open_ds_kwe(fname,log=True):
 	dat = Dataset(fname,'r')
@@ -91,9 +93,9 @@ def plot_wk_integrated(kiso,omega,E,lat,clim,Nbv=0.8594,H=4,wk_only=False,show_c
 		# Tide constituents
 		if show_tides:
 			#for (td,td_label) in zip ([M2,MK3,M4,M6],['M2','MK3','M4','M6']):
-			for (td,td_label) in zip ([M2],['M2']):
-				ax3.plot(ks,[td, td],'w--',linewidth=2.5)
-				ax3.text(1/200,td*1.05,td_label,color='w',size='large')
+			for (td,td_label) in zip ([M2, O1],['M2','O1']):
+				ax3.plot(ks,[td, td], c='gray', ls='--',linewidth=2.5)
+				ax3.text(1/200,td*1.05,td_label,color='gray',size='large')
 
 		## Graficamos los modos verticales 1,2,3,4,10 para las ondas internas
 		kh = kiso #np.linspace(1/270.,1/5.)
@@ -105,7 +107,9 @@ def plot_wk_integrated(kiso,omega,E,lat,clim,Nbv=0.8594,H=4,wk_only=False,show_c
 			igw_n = igw_disp_rel(kh,f,mode,Nbv=Nbv,H=H,log=log)
 			ax3.plot(kh,igw_n,'k:',linewidth=4)
 		w_partition = igw_bm_partition_k(kh,f,M2,Nbv=Nbv,H=H,log=log)
+		#w_partition2 = igw_bm_partition_k(kh,f,O1,Nbv=Nbv,H=H,log=log)
 		ax3.plot(kh,w_partition,'k--',linewidth=4)
+		#ax3.plot(kh,w_partition2,'k--',linewidth=4)
 
 		# Trying to set ticks in space domain
 		#ax3.set_xlabel('Horizontal Wavenumber k [cpkm]', size=18)  # En numero de onda

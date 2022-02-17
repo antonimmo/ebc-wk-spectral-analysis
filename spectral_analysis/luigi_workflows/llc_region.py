@@ -1,15 +1,17 @@
-import logging
 import os
-from multiprocessing import Pool
-from uuid import uuid4
-
+import dask
+import logging
 import numpy as np
+import dask.array as da
+
+from uuid import uuid4
+from regex_engine import generator
 
 #
 from ..common_vars.directories import LUIGI_OUT_FOLDER, POSTPROCESS_OUT_FOLDER
 from ..common_vars.regions import face4id
 from ..common_vars.time_slices import idx_t
-from ..isotropic_spectra.co_spec import cospec_ab
+from ..isotropic_spectra.co_spec import cospec_ab,cospec_ab_kh
 from ..isotropic_spectra.coherence import coherence_ab
 # Spectral analysis
 from ..isotropic_spectra.isotropic import calc_ispec
@@ -18,6 +20,7 @@ from importlib import reload
 from ..luigi_workflows.output import VorticityGrid
 #reload(VorticityGrid)
 
+
 ## PATHS
 ds_path_fmt = LUIGI_OUT_FOLDER+"/Datasets_compressed/{}/{}"
 dxdy_fname_fmt = LUIGI_OUT_FOLDER+"/Datasets_compressed/{}/{}/{}.txt"
@@ -25,8 +28,10 @@ uv_fname_fmt = LUIGI_OUT_FOLDER+"/Datasets_compressed/{0}/{1}/{2}{3:02d}_{4:05d}
 spectra_folder= POSTPROCESS_OUT_FOLDER+"/wk_spectra"
 spectra_fn_fmt = "{folder}/{id}{tag}_{t_res}.npz"
 
+
 ##
-def _var4IdTs(regionId, var_name, t_idx_model, Z_idx, timeRes, threadId):
+@dask.delayed(pure=True)
+def _var4IdTs(regionId, var_name, t_idx_model, Z_idx, timeRes):
   #print(var_name,t_idx,)
   fname_hf = uv_fname_fmt.format(regionId, timeRes, var_name, Z_idx, t_idx_model)
   try:
@@ -35,19 +40,20 @@ def _var4IdTs(regionId, var_name, t_idx_model, Z_idx, timeRes, threadId):
     logging.warn("NP load (file: {}) error: {}".format(fname_hf, err))
     return np.load(fname_hf, allow_pickle=True)["uv"]
 
-## Aux function to load vars in parallel (duh!)
-## ThreadId is only here to avoid function signature collision
-def _varLoader(xyshape, regionId, var_name, t_slice, Z_idx, timeRes, threadId):
-  # Create empty matrix
-  shape = (xyshape[0], xyshape[1], len(t_slice))
-  V = np.zeros(shape)
-  logging.debug("Loading {} (thread: {}): shape (k={}): {}".format(var_name, threadId, Z_idx, shape))
 
-  for idx,t in enumerate(t_slice):
-    V_ = _var4IdTs(regionId, var_name, t, Z_idx, timeRes, threadId)
-    V[:,:,idx] = V_
-        
-  return V
+## Aux function to load vars in parallel using dask
+#@dask.delayed
+#def _varLoader(xyshape, regionId, var_name, t_slice, Z_idx, timeRes):
+#  # Create empty matrix
+#  shape = (xyshape[0], xyshape[1], len(t_slice))
+#  V = np.zeros(shape)
+#  logging.debug("Loading {} shape (k={}): {}".format(var_name, Z_idx, shape))#
+#
+#  for idx,t in enumerate(t_slice):
+#    V_ = _var4IdTs(regionId, var_name, t, Z_idx, timeRes)
+#    V[:,:,idx] = V_.compute()
+#        
+#  return V
 
 
 class LLCRegion():
@@ -57,22 +63,25 @@ class LLCRegion():
   __timeRes = None
   __tag = None
   __timeVec = None
+  t = None
   __face = None
-  __threads = 4
+  __nWorkers = 4
   __dt = None
   __dxAvg = None
   __dyAvg = None
   __spectra = None
-
-  def __init__(self, rid, timeVec, tag=None, t_res="hours", threads=4):
+  
+  
+  def __init__(self, rid, timeVec, tag=None, t_res="hours", nWorkers=4):
     self.__vars = {}
     self.__regionId = rid
     self.__timeRes = t_res
     self.__timeVec = timeVec
+    self.t = timeVec
     self.__tag = "" if tag is None else "_{}".format(tag)
     self.__face = face4id[rid]
     self.__grid = VorticityGrid(rid, t_res)
-    self.__threads = threads
+    self.__nWorkers = nWorkers
     self.__dt = 1 if t_res=="hours" else 24
     self.__dxAvg = np.mean(self.__grid.dxg)/1000
     self.__dyAvg = np.mean(self.__grid.dyg)/1000
@@ -81,6 +90,7 @@ class LLCRegion():
     spec_vars = [k for k in self.__spectra.keys()]
     logging.info("Spectra - Variables: {}".format(spec_vars))
 
+    
   def getGrid(self):
     return self.__grid
 
@@ -94,26 +104,20 @@ class LLCRegion():
 
 
   def varForId(self, var_name, Z_idx=0, t_firstaxis=False):
-    # Create empty matrix
     shape_uv = self.__grid.f.shape
     shape = (shape_uv[0], shape_uv[1], len(self.__timeVec))
     logging.info("Loading {}: shape (k={}): {}".format(var_name, Z_idx, shape))
-    V = np.zeros(shape)
+  
+    loaders = [_var4IdTs(self.__regionId, var_name, t, Z_idx, self.__timeRes) for t in self.__timeVec]
+    #sampleLoad = loaders[0].compute()
+    arrays = [da.from_delayed(loader, dtype=np.dtype('f'), shape=shape_uv) for loader in loaders]
+    print("var4Id type", type(arrays))
     
-    nLoaders = self.__threads
-    with Pool(nLoaders) as pool:
-      args = [(shape_uv, self.__regionId, var_name, self.__timeVec[ii::nLoaders], Z_idx, self.__timeRes, uuid4()) for ii in range(nLoaders)]
-      res = [pool.apply_async(_varLoader, a) for a in args]
-      for ii,r in enumerate(res):
-        logging.debug("Geting result {} - {}/{}".format(var_name, ii+1, nLoaders))
-        V[:,:,ii::nLoaders] = r.get()
-        logging.debug("Got result {} - {}/{}".format(var_name, ii+1, nLoaders))
+    r = da.stack(arrays, axis=0) if t_firstaxis else da.stack(arrays, axis=-1)
+    print("var4Id type stacked", type(r))
+
+    return r
     
-    if t_firstaxis:
-      V = np.moveaxis(V, -1, 0)
-
-    return V
-
 
   def loadScalar(self, var_name, Z_idx=0, t_firstaxis=False):
     try:
@@ -218,6 +222,10 @@ class LLCRegion():
     return cospec_ab(A, B, self.__dxAvg, self.__dyAvg, self.__dt)
 
 
+  def _cospectrum_kh(self, A, B):
+    return cospec_ab_kh(A, B, self.__dxAvg, self.__dyAvg)
+
+
   def _coh(self, A, B):
     return coherence_ab(A, B, self.__dxAvg, self.__dyAvg, self.__dt)
 
@@ -276,6 +284,25 @@ class LLCRegion():
       self.__spectra["om"] = omega
       self.__spectra[spectrum_name] = cospec_iso
       logging.info("Saved {}({}). min: {}, max: {}".format(spectrum_name, self.__spectra[spectrum_name].shape, np.min(self.__spectra[spectrum_name]), np.max(self.__spectra[spectrum_name])))
+      
+  def cospectrum_kh(self, var1_name, var2_name, spectrum_name, recalculate=False):
+    if spectrum_name in self.__spectra.keys() and not recalculate:
+      logging.info("Cospectrum kh {} already there".format(spectrum_name))
+    else:
+      logging.info("Calculating {}_kh = FFT({})*FFT({})^*".format(spectrum_name, var1_name, var2_name))
+      hasVar1 = var1_name in self.__vars.keys()
+      hasVar2 = var2_name in self.__vars.keys()
+      if not (hasVar1 and hasVar2):
+        logging.error("First load vars ({}, {}) -- Vars: {}".format(var1_name, var2_name, self.__vars.keys()))
+        return
+      A, B = self.__vars[var1_name], self.__vars[var2_name]
+      cospec, kx, ky, dkx, dky = self._cospectrum_kh(A, B)
+      tVec = np.array(self.__timeVec)
+      kiso, cospec_iso = calc_ispec(cospec, kx, ky, tVec)
+      self.__spectra["k_h"] = kiso
+      self.__spectra["t"] = tVec
+      self.__spectra[spectrum_name] = cospec_iso
+      logging.info("Saved {}({}). min: {}, max: {}".format(spectrum_name, self.__spectra[spectrum_name].shape, np.min(self.__spectra[spectrum_name]), np.max(self.__spectra[spectrum_name])))
 
 
   def coherence(self, var1_name, var2_name, spectrum_name, recalculate=False):
@@ -297,6 +324,7 @@ class LLCRegion():
       self.__spectra[spectrum_name] = coh_iso
       logging.info("Saved {}({}). min: {}, max: {}".format(spectrum_name, self.__spectra[spectrum_name].shape, np.min(self.__spectra[spectrum_name]), np.max(self.__spectra[spectrum_name])))
       
+ 
   def coherence_error(self, spectrum_name, nd=1):
     logging.info("Calculating normalized error E[{}]".format(spectrum_name))
     coh_spec = self.__spectra[spectrum_name]

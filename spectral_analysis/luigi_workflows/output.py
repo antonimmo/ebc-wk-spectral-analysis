@@ -1,6 +1,7 @@
 import logging
 
 import numpy as np
+import dask.array as da
 
 #
 from ..common_vars.directories import LUIGI_OUT_FOLDER
@@ -178,12 +179,12 @@ class VorticityGrid():
 	## http://mitgcm.org/sealion/online_documents/node61.html
 	# Centrado en celdas g (lat_g,lon_g)
 	def rv(self, U, V):
-		return (np.gradient(self.dyc*V,axis=-1,edge_order=2) - np.gradient(self.dxc*U,axis=-2,edge_order=2))/self.rAz
+		return (da.gradient(self.dyc[np.newaxis,:,:]*V,axis=-1,edge_order=2) - da.gradient(self.dxc[np.newaxis,:,:]*U,axis=-2,edge_order=2))*da.reciprocal(self.rAz[np.newaxis,:,:])
       
     ## http://mitgcm.org/sealion/online_documents/node43.html
 	# Centrado en celdas c (lat_c,lon_c)
 	def div(self, U, V):
-		return (np.gradient(self.dyg*U,axis=-1,edge_order=2) + np.gradient(self.dxg*V,axis=-2,edge_order=2))/self.rAc
+		return (da.gradient(self.dyg[np.newaxis,:,:]*U,axis=-1,edge_order=2) + da.gradient(self.dxg[np.newaxis,:,:]*V,axis=-2,edge_order=2))*da.reciprocal(self.rAc[np.newaxis,:,:])
 
 	## Horizontal Advection 
 	def adv_2d(self, U, V, F, t_firstaxis=False):

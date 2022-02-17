@@ -1,21 +1,21 @@
 import numpy as np
-
 import logging
+
 logging.basicConfig(
     format="%(asctime)s %(levelname)-8s %(message)s",
     level=logging.INFO,
     datefmt="%Y-%m-%d %H:%M:%S")
-
-#logging.getLogger("matplotlib.font_manager").setLevel(logging.WARNING)
 logging.getLogger('matplotlib.font_manager').disabled = True
 logging.getLogger('matplotlib.colorbar').disabled = True
 logging.getLogger('matplotlib.ticker').disabled = True
+
 
 def centerIdx(length):
     if length%2==1:
         return int((length-1)/2+1)
     else:
         return int(length/2)
+
 
 def calc_ispec(E,k,l,om):
     """ calculates isotropic spectrum from 3D spectrum """

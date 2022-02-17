@@ -15,6 +15,14 @@ ids_regions = {
     "Benguela": list(reversed(ids_Ben)),
     "Kuroshio": list(reversed(ids_Kuro))
 }
+
+timezone_regions = {
+    "Canarias": 0,
+    "California": -8,
+    "Peru": -5,
+    "Benguela": 2
+}
+
 #ids_regions = {
 #    "California": [762],
 #    "Canarias": [750, 730],
