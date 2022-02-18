@@ -1,0 +1,31 @@
+name: thesis
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.9
+  - jupyterlab
+  - cupy
+  - scipy
+  - numba
+  - matplotlib
+  - xmitgcm
+  - seaborn
+  - cmocean
+  - pyferret
+  - ferret_datasets
+  - ipywidgets
+  - pyarrow
+  - netcdf4
+  - basemap
+  - basemap-data-hires
+  - geopandas
+  - tqdm
+  - ipympl
+  - ipyvolume
+  - graphviz
+  - python-graphviz
+  - dask=2021.11.1
+  - xrft
+  - h5py
+prefix: /home/ant/miniconda3/envs/thesis
