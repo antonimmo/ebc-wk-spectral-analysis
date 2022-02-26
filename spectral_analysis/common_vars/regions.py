@@ -23,6 +23,13 @@ timezone_regions = {
     "Benguela": 2
 }
 
+tzinfo_regions = {
+    "Canarias": "Atlantic/Azores",
+    "California": "US/Pacific",
+    "Peru": "America/Lima",
+    "Benguela": "" ## UTC (default)
+}
+
 #ids_regions = {
 #    "California": [762],
 #    "Canarias": [750, 730],
