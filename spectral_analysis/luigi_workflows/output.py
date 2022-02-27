@@ -168,45 +168,67 @@ class VorticityGrid():
 	def xyg(self):
 		return self.lon_g,self.lat_g
 	
+	
 	def xyc(self):
 		return self.lon_c,self.lat_c
 	
+	
+	
 	## Ejes para derivadas (pensando en una matriz 2D, las columnas van en X y las filas en Y)
-	# Axis -1: x (último, o columnas (1) si es 2D)
-	# Axis -2: y (penúltimo, o filas (0) si es 2D)
-	# Si se agrega el tiempo, éste debe ser la primera dimensión
+	# Axis
+	#	2D: x: 1, y: 0 (o x: -1, y: -2)
+	#	3D (timeaxis=-1): x: 1, y: 0
+	#	3D (timeaxis=0): x: 2, y: 1
 	
 	## http://mitgcm.org/sealion/online_documents/node61.html
 	# Centrado en celdas g (lat_g,lon_g)
-	def rv(self, U, V):
-		return (da.gradient(self.dyc[np.newaxis,:,:]*V,axis=-1,edge_order=2) - da.gradient(self.dxc[np.newaxis,:,:]*U,axis=-2,edge_order=2))*da.reciprocal(self.rAz[np.newaxis,:,:])
-      
-    ## http://mitgcm.org/sealion/online_documents/node43.html
+	def rv(self, U, V, twodim=False, t_ax=-1):
+		x_ax,y_ax = ((2,1), (1,0))[twodim or t_ax==-1]
+		dx_ = ((self.dxc[np.newaxis,:,:], self.dxc[:,:,np.newaxis])[t_ax==-1], self.dxc[:,:])[twodim]
+		dy_ = ((self.dyc[np.newaxis,:,:], self.dyc[:,:,np.newaxis])[t_ax==-1], self.dyc[:,:])[twodim]
+		rAz_ = ((self.rAz[np.newaxis,:,:], self.rAz[:,:,np.newaxis])[t_ax==-1], self.rAz[:,:])[twodim]
+		rAz_inv = da.reciprocal(rAz_)
+		
+		return (da.gradient(dy_*V, axis=x_ax, edge_order=2) - da.gradient(dx_*U, axis=y_ax, edge_order=2))*rAz_inv
+	
+	
+	## http://mitgcm.org/sealion/online_documents/node43.html
 	# Centrado en celdas c (lat_c,lon_c)
-	def div(self, U, V):
-		return (da.gradient(self.dyg[np.newaxis,:,:]*U,axis=-1,edge_order=2) + da.gradient(self.dxg[np.newaxis,:,:]*V,axis=-2,edge_order=2))*da.reciprocal(self.rAc[np.newaxis,:,:])
-
+	def div(self, U, V, twodim=False, t_ax=-1):
+		x_ax,y_ax = ((2,1), (1,0))[twodim or t_ax==-1]
+		dx_ = ((self.dxg[np.newaxis,:,:], self.dxg[:,:,np.newaxis])[t_ax==-1], self.dxg[:,:])[twodim]
+		dy_ = ((self.dyg[np.newaxis,:,:], self.dyg[:,:,np.newaxis])[t_ax==-1], self.dyg[:,:])[twodim]
+		rAc_ = ((self.rAc[np.newaxis,:,:], self.rAc[:,:,np.newaxis])[t_ax==-1], self.rAc[:,:])[twodim]
+		rAc_inv = da.reciprocal(rAc_)
+		
+		return (da.gradient(dy_*U, axis=x_ax, edge_order=2) + da.gradient(dx_*V, axis=y_ax, edge_order=2))*rAc_inv
+	
+	
 	## Horizontal Advection 
 	def adv_2d(self, U, V, F, t_firstaxis=False):
 		if not t_firstaxis:
 			U,V,F = np.moveaxis(U, -1, 0), np.moveaxis(V, -1, 0), np.moveaxis(F, -1, 0)
-      
+		  
 		adv = (np.gradient(U*self.dyg*F,axis=-1,edge_order=2) + np.gradient(V*self.dxg*F,axis=-2,edge_order=2))/self.rAz
 		if not t_firstaxis:
 			adv = np.moveaxis(adv, 0, -1)
-            
+	        
 		return adv
+	
 	
 	def rv2(self, U, V):
 		return np.square(self.rv(U,V))
-
+	
+	
 	def st(self, U, V):
 		return np.sqrt(self.st2(U,V))
-
+	
+	
 	def st2(self, U, V):
 		ss = (np.gradient(self.dyc*V,axis=-1,edge_order=2) + np.gradient(self.dxc*U,axis=-2,edge_order=2))/self.rAz
 		sn = (np.gradient(self.dyc*U,axis=-1,edge_order=2) - np.gradient(self.dxc*V,axis=-2,edge_order=2))/self.rAz
 		return np.square(sn) + np.square(ss)
-
+	
+	
 	def ow(self,U,V):
 		return self.st2(U,V) - self.rv2(U,V)
