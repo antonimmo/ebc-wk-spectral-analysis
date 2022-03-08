@@ -1,3 +1,4 @@
 *.pyc
 **/.ipynb_checkpoints/**
 dask-worker-space
+figs
