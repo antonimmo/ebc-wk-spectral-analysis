@@ -28,13 +28,13 @@ temp_rcParams = {
 }
 
 ## Frecuencias de marea
-#K1 = 1./23.93
+K1 = 1./23.93
 M2 = 1./12.4
 MK3 = 1./8.17
 M4 = 1./6.21
 M6 = 1./4.14
 O1 = 1./24.833
-K1 = 1./24.0
+#K1 = 1./24.0
 
 def open_ds_kwe(fname,log=True):
 	dat = Dataset(fname,'r')
@@ -93,7 +93,7 @@ def plot_wk_integrated(kiso,omega,E,lat,clim,Nbv=0.8594,H=4,wk_only=False,show_c
 		# Tide constituents
 		if show_tides:
 			#for (td,td_label) in zip ([M2,MK3,M4,M6],['M2','MK3','M4','M6']):
-			for (td,td_label) in zip ([M2, O1],['M2','O1']):
+			for (td,td_label) in zip ([M2, K1],['M2','K1']):
 				ax3.plot(ks,[td, td], c='gray', ls='--',linewidth=2.5)
 				ax3.text(1/200,td*1.05,td_label,color='gray',size='large')
 
@@ -241,9 +241,9 @@ def get_clim(var):
 	elif var == 'SSH':
 	    clim = [1e-6,1e-2]
 	elif var == 'RV':
-	    clim = [1e-12,1e-10]
+	    clim = [1e-13,1e-10]
 	elif var == 'DIV':
-	    clim = [1e-12,1e-10]
+	    clim = [1e-13,1e-10]
 
 	return clim
 
