@@ -8,8 +8,7 @@ from ..common_vars.directories import LUIGI_OUT_FOLDER
 from ..common_vars.regions import face4id
 
 ## Directorios
-ds_path_fmt = LUIGI_OUT_FOLDER+"/Datasets_compressed/{}/{}"
-dxdy_fname_fmt = LUIGI_OUT_FOLDER+"/Datasets_compressed/{}/{}/{}.txt"
+#ds_path_fmt = LUIGI_OUT_FOLDER+"/Datasets_compressed/{}/{}"
 uv_fname_fmt = LUIGI_OUT_FOLDER+"/Datasets_compressed/{0}/{1}/{2}{3:02d}_{4:05d}.npz"
 
 def theta4idt(region_id,t_idx,Z_idx,t_res="hours"):
@@ -152,7 +151,10 @@ def Tau4id(id,time,Z_idx=0,t_res="hours",t_firstaxis=False):
 class VorticityGrid():
 	dxc,dxg,dyc,dyg,rAz,rAc,lon_c,lon_g,lat_c,lat_g,f = (None,)*11
 	
-	def __init__(self,region_id,t_res="hours"):
+	def __init__(self, region_id, t_res="hours", datasetsFolder=LUIGI_OUT_FOLDER+"/Datasets_compressed"):
+		dxdy_fname_fmt = datasetsFolder+"/{}/{}/{}.txt"
+		print("DS_FOLDER", datasetsFolder)
+		print("LUIGI", LUIGI_OUT_FOLDER)
 		self.dxg = np.loadtxt(dxdy_fname_fmt.format(region_id,t_res,"dxg"))
 		self.dxc = np.loadtxt(dxdy_fname_fmt.format(region_id,t_res,"dxc"))
 		self.dyg = np.loadtxt(dxdy_fname_fmt.format(region_id,t_res,"dyg"))

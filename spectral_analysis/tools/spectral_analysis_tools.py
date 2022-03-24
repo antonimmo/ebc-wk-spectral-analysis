@@ -94,8 +94,8 @@ def plot_wk_integrated(kiso,omega,E,lat,clim,Nbv=0.8594,H=4,wk_only=False,show_c
 		if show_tides:
 			#for (td,td_label) in zip ([M2,MK3,M4,M6],['M2','MK3','M4','M6']):
 			for (td,td_label) in zip ([M2, K1],['M2','K1']):
-				ax3.plot(ks,[td, td], c='gray', ls='--',linewidth=2.5)
-				ax3.text(1/200,td*1.05,td_label,color='gray',size='large')
+				ax3.plot(ks,[td, td], c='white', ls='--',linewidth=2.5)
+				ax3.text(1/15,td*1.05,td_label,color='white',size='large')
 
 		## Graficamos los modos verticales 1,2,3,4,10 para las ondas internas
 		kh = kiso #np.linspace(1/270.,1/5.)
